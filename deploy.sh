@@ -4,6 +4,10 @@
 POSTGRES_USER="myuser"
 POSTGRES_PASSWORD=$(openssl rand -base64 12)  # Generate a random 12-character password
 POSTGRES_DB="mydatabase"
+AUTH_SECRET="B+wenNi0E8r7hPBUEyj4ey9hG6qmKPAAMedgl//shy4="
+NEXTAUTH_SECRET="TZxoqdNFet/7tLS6yAfRVP/mzBuEIuoj3aDXRlPYu84="
+AUTH_TRUST_HOST=true
+RESEND_API_KEY="re_NGtWSdDL_5aHZfaLrtx19h77gYhqXD8DJ"
 # SECRET_KEY="my-secret" # for the demo app
 # NEXT_PUBLIC_SAFE_KEY="safe-key" # for the demo app
 # DOMAIN_NAME="nextselfhost.dev" # replace with your own

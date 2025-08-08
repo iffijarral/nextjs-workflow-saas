@@ -7,7 +7,7 @@ import CardWrapper from '@/app/ui/dashboard/cards';
 import { connection } from 'next/server';
 
 export default async function Page() {
-    await connection();
+    await connection(); // This is very important to ensure the database connection is established before rendering the page.
     
     return (
         <main>
