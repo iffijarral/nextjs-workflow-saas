@@ -1,0 +1,16 @@
+This file contains the information of important steps, just to remember what I did.
+
+Locally the project has two git remotes, 1) origin, which is for github 2) origin_gitlab, for gitlab.
+When I push to gitlab I use the command git push origin_gitlab main
+
+Gitlab Communication during development
+To communicate with gitlab, I generated new ssh keys(pub, private). The keys are stored in file iffidk-ssh-key, iffidk-ssh-key.pub 
+I created new ssh key at gitlab and pasted iffidk-ssh-key.pub into it. This way I communicate with gitlab.
+
+Gitlab Communication with vps in deploy stage
+To established the connection with vps and CI/CD pipeline in deploy stage, I generated new ssh key named gitlab_ci_deploy.
+Its private key is saved in CI/CD variable and the pub key is saved in ~/.ssh/authorized_keys at vps. 
+
+vps communication with gitlab outside pipeline
+For this I generated a ssh key at vps named id_rsa_new. Its pub key is added to gitlab's ssh keys. 
+In ~/.ssh/config file I added the host information of gitlab project. This way I am able to communicate with gitlab at vps.

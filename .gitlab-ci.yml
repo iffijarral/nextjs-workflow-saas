@@ -1,0 +1,91 @@
+stages:
+  - lint
+  - audit
+  - security
+  - build
+  - deploy
+
+variables:
+  APP_IMAGE: $CI_REGISTRY_IMAGE:latest
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_TLS_CERTDIR: ""
+
+# 1️⃣ Lint job
+lint:
+  stage: lint
+  image: node:20
+  script:
+    - npm install -g pnpm
+    - pnpm install
+    - npx prettier --check .
+    - npx eslint .
+  only:
+    - main
+
+# 2️⃣ Audit job
+audit:
+  stage: audit
+  image: node:20
+  script:
+    - npm install -g pnpm
+    - pnpm install --frozen-lockfile
+    - npm audit --production --audit-level=high
+  only:
+    - main
+
+# 3️⃣ Security scan with OWASP
+security:
+  stage: security
+  image: owasp/dependency-check
+  variables:
+    OWASP_OUTPUT_DIR: "owasp-reports/$CI_PIPELINE_ID"
+  script:
+    - mkdir -p $OWASP_OUTPUT_DIR
+    - dependency-check.sh --project bizflow --out $OWASP_OUTPUT_DIR --scan .
+  artifacts:
+    paths:
+      - $OWASP_OUTPUT_DIR
+    expire_in: 60 days
+  only:
+    - main
+
+# 4️⃣ Build and push Docker image to GitLab Container Registry
+build-image:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
+  script:
+    - docker build --pull -t $APP_IMAGE .
+    - docker push $APP_IMAGE
+  only:
+    - main
+  needs:
+    - lint
+    - audit
+    - security
+
+# 5️⃣ Deploy to VPS by pulling the built image
+deploy:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" | base64 -d > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+  script:
+    - ssh $DEPLOY_USER@$DEPLOY_HOST "
+        docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY &&
+        docker pull $APP_IMAGE &&
+        docker stop bizflow || true &&
+        docker rm bizflow || true &&
+        docker run -d --name bizflow --env-file /path/to/.env -p 3000:3000 $APP_IMAGE
+      "
+  only:
+    - main
+  needs:
+    - build-image
