@@ -1,5 +1,6 @@
 {
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "SKIP_DB_CONNECT=true next build",
     "dev": "next dev --turbopack",
