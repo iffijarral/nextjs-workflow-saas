@@ -69,12 +69,12 @@ deploy:
   before_script:
     - apk add --no-cache openssh-client docker-cli-compose
     - mkdir -p ~/.ssh
-    - echo "$SSH_PRIVATE_KEY" | base64 -d > ~/.ssh/id_rsa_new
-    - chmod 600 ~/.ssh/id_rsa_new
+    - echo "$SSH_PRIVATE_KEY" | base64 -d > ~/.ssh/gitlab_ci_deploy
+    - chmod 600 ~/.ssh/gitlab_ci_deploy
     - ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
   script:
     - |
-      ssh $DEPLOY_USER@$DEPLOY_HOST "
+      ssh -i ~/.ssh/gitlab_ci_deploy $DEPLOY_USER@$DEPLOY_HOST "
         cd $WORK_DIR &&
 
         # Export env vars for docker-compose
