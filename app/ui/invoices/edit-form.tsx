@@ -1,25 +1,33 @@
-'use client';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
-import { ProjectShort, ServiceTableRow, UpdateInvoiceInput } from '@/app/lib/definitions';
+"use client";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import {
+  ProjectShort,
+  ServiceTableRow,
+  UpdateInvoiceInput,
+} from "@/app/lib/definitions";
 import {
   CheckIcon,
   ClockIcon,
   UserCircleIcon,
   PlusIcon,
   TrashIcon,
-} from '@heroicons/react/24/outline';
-import Link from 'next/link';
-import { Button } from '@/app/ui/button';
-import { reloadInvoices, State, updateInvoice } from '@/app/lib/actions/invoiceActions';
-import { useActionState } from 'react';
-import { Toast } from '../common/toast';
+} from "@heroicons/react/24/outline";
+import Link from "next/link";
+import { Button } from "@/app/ui/button";
+import {
+  reloadInvoices,
+  State,
+  updateInvoice,
+} from "@/app/lib/actions/invoiceActions";
+import { useActionState } from "react";
+import { Toast } from "../common/toast";
 
 export default function EditInvoiceForm({
   invoice,
   projects,
   services,
-  selectedProjectId
+  selectedProjectId,
 }: {
   invoice: UpdateInvoiceInput;
   projects: ProjectShort[];
@@ -36,24 +44,27 @@ export default function EditInvoiceForm({
   const [serviceRows, setServiceRows] = useState(
     Array.isArray(invoice.services) && invoice.services.length > 0
       ? invoice.services.map((s) => ({
-        serviceId: s.service.id ?? '', // instead of s.id
-        serviceName: s.service?.name ?? '',
-        quantity: s.quantity.toString(),
-        amount: (s.amount / 100).toString(),
-      }))
-      : [{ serviceId: '', serviceName: '', quantity: '', amount: '' }]
+          serviceId: s.service.id ?? "", // instead of s.id
+          serviceName: s.service?.name ?? "",
+          quantity: s.quantity.toString(),
+          amount: (s.amount / 100).toString(),
+        }))
+      : [{ serviceId: "", serviceName: "", quantity: "", amount: "" }],
   );
 
   const addServiceRow = () =>
-    setServiceRows([...serviceRows, { serviceId: '', serviceName: '', quantity: '', amount: '' }]);
+    setServiceRows([
+      ...serviceRows,
+      { serviceId: "", serviceName: "", quantity: "", amount: "" },
+    ]);
 
   const removeServiceRow = (index: number) =>
     setServiceRows(serviceRows.filter((_, i) => i !== index));
 
   const handleChange = (
     index: number,
-    field: 'serviceId' | 'serviceName' | 'quantity' | 'amount',
-    value: string
+    field: "serviceId" | "serviceName" | "quantity" | "amount",
+    value: string,
   ) => {
     const updated = [...serviceRows];
     updated[index][field] = value;
@@ -63,8 +74,10 @@ export default function EditInvoiceForm({
   const handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const projectId = e.target.value;
     const params = new URLSearchParams(searchParams.toString());
-    params.set('projectId', projectId);
-    router.replace(`/dashboard/invoices/${invoice.id}/edit?${params.toString()}`);
+    params.set("projectId", projectId);
+    router.replace(
+      `/dashboard/invoices/${invoice.id}/edit?${params.toString()}`,
+    );
   };
 
   return (
@@ -106,7 +119,9 @@ export default function EditInvoiceForm({
                 <select
                   name={`services[${index}][serviceId]`}
                   value={row.serviceId}
-                  onChange={(e) => handleChange(index, 'serviceId', e.target.value)}
+                  onChange={(e) =>
+                    handleChange(index, "serviceId", e.target.value)
+                  }
                   className="flex-1 rounded-md border border-gray-300 p-2 text-sm"
                 >
                   <option value="">Select service</option>
@@ -122,7 +137,9 @@ export default function EditInvoiceForm({
                   type="text"
                   name={`services[${index}][serviceName]`}
                   value={row.serviceName}
-                  onChange={(e) => handleChange(index, 'serviceName', e.target.value)}
+                  onChange={(e) =>
+                    handleChange(index, "serviceName", e.target.value)
+                  }
                   className="flex-1 rounded-md border border-gray-300 p-2 text-sm"
                   placeholder="Or enter new service"
                   disabled={!!row.serviceId}
@@ -132,7 +149,9 @@ export default function EditInvoiceForm({
                   type="number"
                   name={`services[${index}][quantity]`}
                   value={row.quantity}
-                  onChange={(e) => handleChange(index, 'quantity', e.target.value)}
+                  onChange={(e) =>
+                    handleChange(index, "quantity", e.target.value)
+                  }
                   className="w-24 rounded-md border border-gray-300 p-2 text-sm"
                   placeholder="Quantity"
                 />
@@ -141,7 +160,9 @@ export default function EditInvoiceForm({
                   type="number"
                   name={`services[${index}][amount]`}
                   value={row.amount}
-                  onChange={(e) => handleChange(index, 'amount', e.target.value)}
+                  onChange={(e) =>
+                    handleChange(index, "amount", e.target.value)
+                  }
                   className="w-24 rounded-md border border-gray-300 p-2 text-sm"
                   placeholder="Amount"
                 />
@@ -181,7 +202,7 @@ export default function EditInvoiceForm({
                   name="status"
                   type="radio"
                   value="pending"
-                  defaultChecked={invoice.status === 'pending'}
+                  defaultChecked={invoice.status === "pending"}
                   className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
                 />
                 <label
@@ -197,7 +218,7 @@ export default function EditInvoiceForm({
                   name="status"
                   type="radio"
                   value="paid"
-                  defaultChecked={invoice.status === 'paid'}
+                  defaultChecked={invoice.status === "paid"}
                   className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
                 />
                 <label

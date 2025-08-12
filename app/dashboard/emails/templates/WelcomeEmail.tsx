@@ -19,15 +19,19 @@ import {
 interface WelcomeEmailProps {
   message: string;
   recipientName?: string; // This is optional
-  ctaLink?: string;       // This is optional
+  ctaLink?: string; // This is optional
 }
 
 // Corrected component definition
-export default function WelcomeEmail({ message, recipientName, ctaLink = "http://localhost:3000" }: WelcomeEmailProps) {
+export default function WelcomeEmail({
+  message,
+  recipientName,
+  ctaLink = "http://localhost:3000",
+}: WelcomeEmailProps) {
   // Define custom colors or use Tailwind's default palette
-  const brandBlue = 'bg-[#007bff]';
-  const brandTextColor = 'text-[#2c3e50]';
-  const lightBgColor = 'bg-[#f8f9fa]';
+  const brandBlue = "bg-[#007bff]";
+  const brandTextColor = "text-[#2c3e50]";
+  const lightBgColor = "bg-[#f8f9fa]";
 
   return (
     <Html>
@@ -48,7 +52,9 @@ export default function WelcomeEmail({ message, recipientName, ctaLink = "http:/
                 />
               </Column>
               <Column align="right">
-                <Text className={`text-2xl font-bold ${brandBlue.replace('bg-', 'text-')} m-0 leading-tight`}>
+                <Text
+                  className={`text-2xl font-bold ${brandBlue.replace("bg-", "text-")} m-0 leading-tight`}
+                >
                   Velkommen! 🎉
                 </Text>
               </Column>
@@ -58,25 +64,35 @@ export default function WelcomeEmail({ message, recipientName, ctaLink = "http:/
           {/* Main Content Section */}
           <Section className="bg-white p-5">
             <Text className={`text-lg font-bold ${brandTextColor}`}>
-              Hej {recipientName || 'der'},
+              Hej {recipientName || "der"},
             </Text>
 
-            <Text className={`text-base ${brandTextColor} my-4 leading-relaxed`}>
+            <Text
+              className={`text-base ${brandTextColor} my-4 leading-relaxed`}
+            >
               {message}
             </Text>
 
-            <Text className={`text-base ${brandTextColor} my-4 leading-relaxed`}>
-              Vi er glade for at have dig med. Klik nedenfor for at komme i gang med dit malerprojekt!
+            <Text
+              className={`text-base ${brandTextColor} my-4 leading-relaxed`}
+            >
+              Vi er glade for at have dig med. Klik nedenfor for at komme i gang
+              med dit malerprojekt!
             </Text>
 
             {/* CTA Button */}
             <Section className="text-center my-5">
-              <Button href={ctaLink} className={`${brandBlue} text-white font-bold py-3 px-6 rounded-md text-lg inline-block text-center`}>
+              <Button
+                href={ctaLink}
+                className={`${brandBlue} text-white font-bold py-3 px-6 rounded-md text-lg inline-block text-center`}
+              >
                 Kom i gang!
               </Button>
             </Section>
 
-            <Text className={`text-base ${brandTextColor} my-4 leading-relaxed`}>
+            <Text
+              className={`text-base ${brandTextColor} my-4 leading-relaxed`}
+            >
               Hvis du har spørgsmål, er du altid velkommen til at kontakte os.
             </Text>
           </Section>
@@ -87,13 +103,18 @@ export default function WelcomeEmail({ message, recipientName, ctaLink = "http:/
             <Text className={`m-0 text-base ${brandTextColor}`}>
               Med venlig hilsen,
               <br />
-              <strong className={brandBlue.replace('bg-', 'text-')}>Khadim Hussain</strong>
+              <strong className={brandBlue.replace("bg-", "text-")}>
+                Khadim Hussain
+              </strong>
               <br />
               RAH Maler
             </Text>
 
             <Text className="m-0 mt-2">
-              <Link href={`mailto:info@rahmaler.dk`} className={`${brandBlue.replace('bg-', 'text-')} underline`}>
+              <Link
+                href={`mailto:info@rahmaler.dk`}
+                className={`${brandBlue.replace("bg-", "text-")} underline`}
+              >
                 info@rahmaler.dk
               </Link>
             </Text>
@@ -114,7 +135,8 @@ export default function WelcomeEmail({ message, recipientName, ctaLink = "http:/
             </Row>
 
             <Text className="mt-5 text-xs text-gray-500">
-              &copy; {new Date().getFullYear()} RAH Maler. Alle rettigheder forbeholdt.
+              &copy; {new Date().getFullYear()} RAH Maler. Alle rettigheder
+              forbeholdt.
             </Text>
           </Section>
         </Container>

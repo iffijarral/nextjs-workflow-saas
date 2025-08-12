@@ -1,59 +1,57 @@
-'use server';
-import { Resend } from 'resend';
+"use server";
+import { Resend } from "resend";
 // import { render } from '@react-email/render';
 // import { JSDOM } from 'jsdom';
 // import DOMPurify from 'dompurify';
-import Faktura from '../generate-pdf';
-import { FakturaEmail } from '@/app/dashboard/emails/templates/FakturaEmail';
-import { InvoiceTableRow } from '../definitions';
+import Faktura from "../generate-pdf";
+import { FakturaEmail } from "@/app/dashboard/emails/templates/FakturaEmail";
+import { InvoiceTableRow } from "../definitions";
 // import { EmailFormSchema } from '../schemas';
 // import WelcomeEmail from '@/app/dashboard/emails/templates/WelcomeEmail';
 
 export async function sendInvoice(invoice: InvoiceTableRow) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  const pdfBytes = await Faktura(invoice);
+  const base64Pdf = Buffer.from(pdfBytes).toString("base64");
 
-    const resend = new Resend(process.env.RESEND_API_KEY);
-    const pdfBytes = await Faktura(invoice);
-    const base64Pdf = Buffer.from(pdfBytes).toString('base64');
+  try {
+    const { error } = await resend.emails.send({
+      from: "onboarding@resend.dev",
+      to: "iffidk@gmail.com",
+      // to: invoice.customer.email,
+      subject: `Faktura fra RAH Maler`,
+      react: FakturaEmail({ name: invoice.project.customer.name }),
+      attachments: [
+        {
+          filename: `faktura-${invoice.id}.pdf`,
+          content: base64Pdf, // must be base64
+        },
+      ],
+    });
 
-    try {
-        const { error } = await resend.emails.send({
-            from: 'onboarding@resend.dev',
-            to: 'iffidk@gmail.com',
-            // to: invoice.customer.email,
-            subject: `Faktura fra RAH Maler`,
-            react: FakturaEmail({ name: invoice.project.customer.name }),
-            attachments: [
-                {
-                    filename: `faktura-${invoice.id}.pdf`,
-                    content: base64Pdf, // must be base64
-                },
-            ],
-        });
-
-        if (error) {
-            console.error('Email Error:', error);
-            return {
-                errors: {
-                    message: ['Failed to send email.'],
-                },
-                success: false,
-            };
-        }
-
-    } catch (error) {
-        console.error('Email Error:', error);
-        return {
-            errors: {
-                message: ['Failed to send email.'],
-            },
-            success: false,
-        };
+    if (error) {
+      console.error("Email Error:", error);
+      return {
+        errors: {
+          message: ["Failed to send email."],
+        },
+        success: false,
+      };
     }
-
+  } catch (error) {
+    console.error("Email Error:", error);
     return {
-        errors: {},
-        success: true,
+      errors: {
+        message: ["Failed to send email."],
+      },
+      success: false,
     };
+  }
+
+  return {
+    errors: {},
+    success: true,
+  };
 }
 
 // Send an email using the Resend library

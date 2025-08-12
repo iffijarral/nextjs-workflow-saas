@@ -1,10 +1,9 @@
 "use server";
-import bcrypt from 'bcryptjs';
-import { prisma } from '../lib/prisma';
+import bcrypt from "bcryptjs";
+import { prisma } from "../lib/prisma";
 // import { invoices, customers, revenue, users } from '../lib/placeholder-data';
-import { users } from '../lib/placeholder-data';
+import { users } from "../lib/placeholder-data";
 // const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
-
 
 // async function seedUsers() {
 //   await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public`;
@@ -32,8 +31,8 @@ import { users } from '../lib/placeholder-data';
 //   return insertedUsers;
 // }
 async function seedUsers() {
-  console.log('Inside seedUser');
-  
+  console.log("Inside seedUser");
+
   // Iterate through users, hash password, and create users using Prisma
   for (const user of users) {
     const hashedPassword = await bcrypt.hash(user.password, 10);
@@ -57,7 +56,7 @@ async function seedUsers() {
     }
   }
 
-  console.log('Users seeded successfully');
+  console.log("Users seeded successfully");
 }
 
 // seedUsers()
@@ -68,7 +67,6 @@ async function seedUsers() {
 //   .finally(() => {
 //     prisma.$disconnect();
 //   });
-
 
 /*async function seedInvoices() {
   await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
@@ -160,8 +158,8 @@ async function seedUsers() {
 }*/
 
 export async function GET() {
-  try {    
-    console.log('Seeding database...');
+  try {
+    console.log("Seeding database...");
     await seedUsers();
     // await prisma.$transaction([
     //   seedUsers(),
@@ -170,14 +168,14 @@ export async function GET() {
     //   seedRevenue(),
     // ]);
     // await sql`DROP TABLE IF EXISTS users, invoices, customers, revenue`;
-    // await sql.begin(() => [      
+    // await sql.begin(() => [
     //   seedUsers(),
     //   // seedCustomers(),
     //   // seedInvoices(),
     //   // seedRevenue(),
     // ]);
 
-    return Response.json({ message: 'Database seeded successfully' });
+    return Response.json({ message: "Database seeded successfully" });
   } catch (error) {
     return Response.json({ error }, { status: 500 });
   }

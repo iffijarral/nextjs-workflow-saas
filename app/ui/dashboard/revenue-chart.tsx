@@ -1,6 +1,6 @@
-import { CalendarIcon } from '@heroicons/react/24/outline';
-import { lusitana } from '@/app/ui/fonts';
-import { fetchRevenue } from '@/app/lib/data';
+import { CalendarIcon } from "@heroicons/react/24/outline";
+import { lusitana } from "@/app/ui/fonts";
+import { fetchRevenue } from "@/app/lib/data";
 
 function generateYAxis(data: { revenue: number }[]) {
   if (!data.length) {
@@ -8,7 +8,7 @@ function generateYAxis(data: { revenue: number }[]) {
   }
 
   // Find the max revenue value
-  const maxRevenue = Math.max(...data.map(d => d.revenue));
+  const maxRevenue = Math.max(...data.map((d) => d.revenue));
 
   // Round up maxRevenue to nearest 10,000 for nicer labels
   const topLabel = Math.ceil(maxRevenue / 10000) * 10000 || 10000;
@@ -26,7 +26,7 @@ export default async function RevenueChart() {
   const rawRevenue = await fetchRevenue();
 
   // Filter out entries with zero revenue for Y axis scaling
-  const nonZeroRevenue = rawRevenue.filter(r => r.revenue > 0);
+  const nonZeroRevenue = rawRevenue.filter((r) => r.revenue > 0);
 
   if (rawRevenue.length === 0 || nonZeroRevenue.length === 0) {
     return <p className="mt-4 text-gray-400">No data available.</p>;
@@ -55,10 +55,15 @@ export default async function RevenueChart() {
 
           {rawRevenue.map((month) => {
             // calculate bar height relative to topLabel
-            const barHeight = topLabel ? (chartHeight * month.revenue) / topLabel : 0;
+            const barHeight = topLabel
+              ? (chartHeight * month.revenue) / topLabel
+              : 0;
 
             return (
-              <div key={month.month} className="flex flex-col items-center gap-2">
+              <div
+                key={month.month}
+                className="flex flex-col items-center gap-2"
+              >
                 <div
                   className="w-full rounded-md bg-blue-300"
                   style={{ height: `${barHeight}px` }}

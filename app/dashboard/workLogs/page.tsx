@@ -1,15 +1,19 @@
-import { lusitana } from '@/app/ui/fonts';
-import { WorkLogTableSkeleton } from '@/app/ui/skeletons';
-import { loadProjects, fetchWorkersAssignedToProject, fetchWorkEntries } from '@/app/lib/data';
-import { Suspense } from 'react';
-import { Metadata } from 'next';
-import WorkLogGrid from '@/app/ui/workerLogs/grid'; // Confirm this path is correct
-import { ProjectShortGrid } from '@/app/lib/definitions';
+import { lusitana } from "@/app/ui/fonts";
+import { WorkLogTableSkeleton } from "@/app/ui/skeletons";
+import {
+  loadProjects,
+  fetchWorkersAssignedToProject,
+  fetchWorkEntries,
+} from "@/app/lib/data";
+import { Suspense } from "react";
+import { Metadata } from "next";
+import WorkLogGrid from "@/app/ui/workerLogs/grid"; // Confirm this path is correct
+import { ProjectShortGrid } from "@/app/lib/definitions";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: 'Work Logs',
+  title: "Work Logs",
 };
 
 // Define a type that matches what fetchWorkEntries returns
@@ -19,11 +23,11 @@ type FetchedWorkEntry = {
   notes: string; // The database field is 'notes'
 };
 
-type PageProps = {    
-    searchParams?: Promise<{
-        projectId?: string;
-        workerId?: string;
-    }>;
+type PageProps = {
+  searchParams?: Promise<{
+    projectId?: string;
+    workerId?: string;
+  }>;
 };
 
 // Add searchParams as a prop to the Page component
@@ -38,14 +42,16 @@ export default async function Page(props: PageProps) {
         <div className="flex w-full items-center justify-between">
           <h1 className={`${lusitana.className} text-2xl`}>Work Logs</h1>
         </div>
-        <p className="text-gray-500">No projects found. Please add a project to get started.</p>
+        <p className="text-gray-500">
+          No projects found. Please add a project to get started.
+        </p>
       </div>
     );
   }
 
   // Determine the initially selected project based on URL or first project
   const initialProjectId = searchParams?.projectId || projects[0].id;
-  const currentProject = projects.find(p => p.id === initialProjectId);
+  const currentProject = projects.find((p) => p.id === initialProjectId);
 
   // If the project from searchParams isn't found, default back to the first project
   const finalProjectId = currentProject ? initialProjectId : projects[0].id;
@@ -61,26 +67,31 @@ export default async function Page(props: PageProps) {
         <div className="flex w-full items-center justify-between">
           <h1 className={`${lusitana.className} text-2xl`}>Work Logs</h1>
         </div>
-        <p className="text-gray-500">No workers found for the selected project. Please assign workers to a project.</p>
+        <p className="text-gray-500">
+          No workers found for the selected project. Please assign workers to a
+          project.
+        </p>
       </div>
     );
   }
 
   // Determine the initially selected worker based on URL or first worker in the list
   const initialWorkerId = searchParams?.workerId || workers[0].id;
-  const currentWorker = workers.find(w => w.id === initialWorkerId);
+  const currentWorker = workers.find((w) => w.id === initialWorkerId);
 
   // If the worker from searchParams isn't found for this project, default to the first worker for the project
   const finalWorkerId = currentWorker ? initialWorkerId : workers[0].id;
 
   // Determine the initial date range based on the selected project's dates
-  const initialProjectStartDate = selectedProjectData.startDate instanceof Date
-    ? selectedProjectData.startDate
-    : new Date();
+  const initialProjectStartDate =
+    selectedProjectData.startDate instanceof Date
+      ? selectedProjectData.startDate
+      : new Date();
 
-  let initialProjectEndDate: Date = selectedProjectData.endDate instanceof Date
-    ? selectedProjectData.endDate
-    : initialProjectStartDate;
+  let initialProjectEndDate: Date =
+    selectedProjectData.endDate instanceof Date
+      ? selectedProjectData.endDate
+      : initialProjectStartDate;
 
   if (!(initialProjectEndDate instanceof Date)) {
     initialProjectEndDate = new Date();
@@ -91,11 +102,11 @@ export default async function Page(props: PageProps) {
     finalWorkerId,
     finalProjectId,
     initialProjectStartDate,
-    initialProjectEndDate
+    initialProjectEndDate,
   );
 
   return (
-    <div className="w-full"> 
+    <div className="w-full">
       <div className="flex w-full items-center justify-between">
         <h1 className={`${lusitana.className} text-2xl`}>Work Logs</h1>
       </div>
@@ -105,7 +116,7 @@ export default async function Page(props: PageProps) {
           workers={workers}
           workEntries={workEntries}
           initialSelectedProject={finalProjectId} // Pass the final determined ID
-          initialSelectedWorker={finalWorkerId}   // Pass the final determined ID
+          initialSelectedWorker={finalWorkerId} // Pass the final determined ID
         />
       </Suspense>
     </div>

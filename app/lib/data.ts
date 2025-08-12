@@ -1,7 +1,13 @@
-import { format } from 'date-fns';
+import { format } from "date-fns";
 import { prisma } from "./prisma";
-import { ProjectStatus } from '@prisma/client';
-import { startOfMonth, endOfMonth, eachMonthOfInterval, startOfYear, endOfYear } from 'date-fns';
+import { ProjectStatus } from "@prisma/client";
+import {
+  startOfMonth,
+  endOfMonth,
+  eachMonthOfInterval,
+  startOfYear,
+  endOfYear,
+} from "date-fns";
 import {
   ProjectService,
   ProjectWithExtras,
@@ -9,7 +15,7 @@ import {
   WorkerShort,
 } from "./definitions";
 import { formatCurrency } from "./utils";
-import { Prisma } from '@prisma/client';
+import { Prisma } from "@prisma/client";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -45,27 +51,25 @@ export async function fetchRevenue() {
     const revenueMap: Record<string, number> = {};
 
     // Populate revenueMap with fetched data
-    revenueData.forEach(row => {
+    revenueData.forEach((row) => {
       revenueMap[row.month_year] = Number(row.total_revenue); // Ensure it's a number
     });
 
     // Generate the last 12 months and fill in revenue
     for (let i = 11; i >= 0; i--) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1); // Get the 1st of the month
-      const key = format(date, 'yyyy-MM');
+      const key = format(date, "yyyy-MM");
       result.push({ month: key, revenue: revenueMap[key] || 0 });
     }
 
     return result;
   } catch (error) {
-    console.error('Failed to fetch revenue data:', error);
+    console.error("Failed to fetch revenue data:", error);
     // In a real application, you might want to throw the error
     // or return a more informative empty state.
     return [];
   }
 }
-
-
 
 // ****************** Cards ******************
 
@@ -89,7 +93,7 @@ export async function fetchCardData() {
           totalAmount: true, // Summing the denormalized totalAmount field
         },
         where: {
-          status: 'paid',
+          status: "paid",
           isDeleted: false,
         },
       }),
@@ -100,7 +104,7 @@ export async function fetchCardData() {
           totalAmount: true, // Summing the denormalized totalAmount field
         },
         where: {
-          status: 'pending',
+          status: "pending",
           isDeleted: false,
         },
       }),
@@ -121,11 +125,10 @@ export async function fetchCardData() {
       totalPendingInvoices,
     };
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch card data.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch card data.");
   }
 }
-
 
 // ****************** Invoices ******************
 
@@ -168,7 +171,6 @@ export async function fetchLatestInvoices() {
   }
 }
 
-
 export async function fetchFilteredInvoices(query: string, page: number = 1) {
   const take = ITEMS_PER_PAGE;
   const skip = (page - 1) * take;
@@ -181,7 +183,7 @@ export async function fetchFilteredInvoices(query: string, page: number = 1) {
       isDeleted: false,
     };
 
-    const isStatusQuery = searchTerms === 'pending' || searchTerms === 'paid';
+    const isStatusQuery = searchTerms === "pending" || searchTerms === "paid";
     const isAmountQuery = !isNaN(Number(query)) && Number(query) > 0;
     const numericAmount = Number(query) * 100; // Assuming amounts are stored in cents/pennies
 
@@ -191,14 +193,22 @@ export async function fetchFilteredInvoices(query: string, page: number = 1) {
     // 1. Text Search Filters (for project name, customer name, email)
     // These should always be considered unless amount is *exclusive*
     orConditions.push(
-      { project: { name: { contains: searchTerms, mode: 'insensitive' } } },
-      { project: { customer: { name: { contains: searchTerms, mode: 'insensitive' } } } },
-      { project: { customer: { email: { contains: searchTerms, mode: 'insensitive' } } } }
+      { project: { name: { contains: searchTerms, mode: "insensitive" } } },
+      {
+        project: {
+          customer: { name: { contains: searchTerms, mode: "insensitive" } },
+        },
+      },
+      {
+        project: {
+          customer: { email: { contains: searchTerms, mode: "insensitive" } },
+        },
+      },
     );
 
     // 2. Status Filter
     if (isStatusQuery) {
-      orConditions.push({ status: searchTerms as 'pending' | 'paid' });
+      orConditions.push({ status: searchTerms as "pending" | "paid" });
     }
 
     // 3. Amount Filter (NEW - uses the totalAmount column)
@@ -213,7 +223,6 @@ export async function fetchFilteredInvoices(query: string, page: number = 1) {
     if (orConditions.length > 0) {
       whereClause.OR = orConditions;
     }
-
 
     const [invoices, totalCount] = await prisma.$transaction([
       prisma.invoice.findMany({
@@ -265,7 +274,7 @@ export async function fetchFilteredInvoices(query: string, page: number = 1) {
           },
         },
         orderBy: {
-          date: 'desc',
+          date: "desc",
         },
         skip: skip,
         take: take,
@@ -276,16 +285,15 @@ export async function fetchFilteredInvoices(query: string, page: number = 1) {
     ]);
 
     return {
-      invoices: invoices.map(inv => ({
+      invoices: invoices.map((inv) => ({
         ...inv,
         date: inv.date.toISOString(),
       })),
       totalPages: Math.ceil(totalCount / take),
     };
-
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch filtered invoices.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch filtered invoices.");
   }
 }
 
@@ -298,7 +306,7 @@ export async function fetchInvoicesPages(query: string) {
       isDeleted: false,
     };
 
-    const isStatusQuery = searchTerms === 'pending' || searchTerms === 'paid';
+    const isStatusQuery = searchTerms === "pending" || searchTerms === "paid";
     const isAmountQuery = !isNaN(Number(query)) && Number(query) > 0;
     const numericAmount = Number(query) * 100; // Use the same logic as fetchFilteredInvoices
 
@@ -307,14 +315,22 @@ export async function fetchInvoicesPages(query: string) {
 
     // 1. Text Search Filters (for project name, customer name, email)
     orConditions.push(
-      { project: { name: { contains: searchTerms, mode: 'insensitive' } } },
-      { project: { customer: { name: { contains: searchTerms, mode: 'insensitive' } } } },
-      { project: { customer: { email: { contains: searchTerms, mode: 'insensitive' } } } }
+      { project: { name: { contains: searchTerms, mode: "insensitive" } } },
+      {
+        project: {
+          customer: { name: { contains: searchTerms, mode: "insensitive" } },
+        },
+      },
+      {
+        project: {
+          customer: { email: { contains: searchTerms, mode: "insensitive" } },
+        },
+      },
     );
 
     // 2. Status Filter
     if (isStatusQuery) {
-      orConditions.push({ status: searchTerms as 'pending' | 'paid' });
+      orConditions.push({ status: searchTerms as "pending" | "paid" });
     }
 
     // 3. Amount Filter (NOW uses the totalAmount column, assuming it's denormalized)
@@ -336,7 +352,6 @@ export async function fetchInvoicesPages(query: string) {
     const totalPages = Math.ceil(totalInvoices / ITEMS_PER_PAGE);
 
     return totalPages;
-
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch total number of invoices.");
@@ -394,7 +409,7 @@ export async function fetchInvoiceById(id: string) {
     });
 
     if (!invoice) {
-      throw new Error('Invoice not found');
+      throw new Error("Invoice not found");
     }
 
     return {
@@ -402,17 +417,15 @@ export async function fetchInvoiceById(id: string) {
       date: invoice.date.toISOString(), // Convert Date → string
     };
   } catch (error) {
-    console.error('Database Error (getInvoiceById):', error);
-    throw new Error('Failed to fetch invoice.');
+    console.error("Database Error (getInvoiceById):", error);
+    throw new Error("Failed to fetch invoice.");
   }
 }
-
 
 // ****************** Customers ******************
 
 export async function fetchCustomersPages(query: string) {
   try {
-
     const count = await prisma.customer.count({
       where: {
         AND: [
@@ -505,7 +518,6 @@ export async function fetchServicesByProject(projectId: string) {
 //   }
 // }
 
-
 // export async function fetchFilteredCustomers(query: string, currentPage: number) {
 //   try {
 //     const data = await prisma.customer.findMany({
@@ -579,7 +591,10 @@ export async function fetchServicesByProject(projectId: string) {
 //   }
 // }
 
-export async function fetchFilteredCustomers(query: string, currentPage: number) {
+export async function fetchFilteredCustomers(
+  query: string,
+  currentPage: number,
+) {
   try {
     const customers = await prisma.customer.findMany({
       where: {
@@ -616,13 +631,14 @@ export async function fetchFilteredCustomers(query: string, currentPage: number)
         },
         // You could also add other aggregates here if needed,
         // e.g., count of projects directly.
-        _count: { // Get total number of projects for this customer
+        _count: {
+          // Get total number of projects for this customer
           select: {
             projects: {
-              where: { isDeleted: false } // Only count non-deleted projects
-            }
-          }
-        }
+              where: { isDeleted: false }, // Only count non-deleted projects
+            },
+          },
+        },
       },
       orderBy: { name: "asc" },
       skip: (currentPage - 1) * ITEMS_PER_PAGE,
@@ -631,7 +647,9 @@ export async function fetchFilteredCustomers(query: string, currentPage: number)
 
     return customers.map((customer) => {
       // Flatten all invoices from all projects for this customer that were fetched
-      const allInvoices = customer.projects.flatMap((project) => project.invoices);
+      const allInvoices = customer.projects.flatMap(
+        (project) => project.invoices,
+      );
 
       const totalInvoices = allInvoices.length; // Count of relevant invoices
 
@@ -661,8 +679,6 @@ export async function fetchFilteredCustomers(query: string, currentPage: number)
     throw new Error("Failed to fetch customer table.");
   }
 }
-
-
 
 export async function fetchCustomerById(id: string) {
   try {
@@ -698,7 +714,7 @@ export async function loadCustomers() {
       id: true,
       name: true,
     },
-    orderBy: { name: 'asc' },
+    orderBy: { name: "asc" },
   });
 }
 
@@ -709,9 +725,13 @@ export async function fetchProjectsPages(query: string) {
     const allStatusKeys = Object.keys(ProjectStatus);
 
     // 2. Filter these keys to find which ones contain the query string (case-insensitive)
-    const matchingStatuses = allStatusKeys.filter(statusKey =>
-      statusKey.toLowerCase().includes(query.toLowerCase())
-    ).map(statusKey => ProjectStatus[statusKey as keyof typeof ProjectStatus]);
+    const matchingStatuses = allStatusKeys
+      .filter((statusKey) =>
+        statusKey.toLowerCase().includes(query.toLowerCase()),
+      )
+      .map(
+        (statusKey) => ProjectStatus[statusKey as keyof typeof ProjectStatus],
+      );
     // .map() converts the string key back to the actual enum value (e.g., 'active' -> ProjectStatus.active)
 
     const count = await prisma.project.count({
@@ -721,7 +741,9 @@ export async function fetchProjectsPages(query: string) {
             OR: [
               { name: { contains: query, mode: "insensitive" } },
               // 🎯 FIXED: Filter status using 'in' operator with matching enum values
-              ...(matchingStatuses.length > 0 ? [{ status: { in: matchingStatuses } }] : []),
+              ...(matchingStatuses.length > 0
+                ? [{ status: { in: matchingStatuses } }]
+                : []),
               // The spread operator `...` and conditional check `matchingStatuses.length > 0`
               // ensure that if no statuses match, this OR condition is not added,
               // preventing potential empty array issues with `in`.
@@ -734,27 +756,30 @@ export async function fetchProjectsPages(query: string) {
 
     return Math.ceil(count / ITEMS_PER_PAGE);
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch total number of projects.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch total number of projects.");
   }
 }
 
-
-export async function fetchFilteredProjects(query: string, currentPage: number) {
+export async function fetchFilteredProjects(
+  query: string,
+  currentPage: number,
+) {
   try {
     const projects = await prisma.project.findMany({
       where: {
         AND: [
           {
             OR: [
-              { name: { contains: query, mode: 'insensitive' } },
-              { customer: { name: { contains: query, mode: 'insensitive' } } },
+              { name: { contains: query, mode: "insensitive" } },
+              { customer: { name: { contains: query, mode: "insensitive" } } },
             ],
           },
           { isDeleted: false },
         ],
       },
-      select: { // Use select instead of include for fine-grained control
+      select: {
+        // Use select instead of include for fine-grained control
         id: true,
         name: true,
         startDate: true,
@@ -787,7 +812,7 @@ export async function fetchFilteredProjects(query: string, currentPage: number) 
         },
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
       skip: (currentPage - 1) * ITEMS_PER_PAGE,
       take: ITEMS_PER_PAGE,
@@ -801,20 +826,20 @@ export async function fetchFilteredProjects(query: string, currentPage: number) 
 
       const totalPending = formatCurrency(
         allInvoices
-          .filter((inv) => inv.status === 'pending')
+          .filter((inv) => inv.status === "pending")
           .reduce(
             (sum, inv) => sum + inv.totalAmount, // <--- Use totalAmount directly
-            0
-          )
+            0,
+          ),
       );
 
       const totalPaid = formatCurrency(
         allInvoices
-          .filter((inv) => inv.status === 'paid')
+          .filter((inv) => inv.status === "paid")
           .reduce(
             (sum, inv) => sum + inv.totalAmount, // <--- Use totalAmount directly
-            0
-          )
+            0,
+          ),
       );
 
       return {
@@ -823,7 +848,9 @@ export async function fetchFilteredProjects(query: string, currentPage: number) 
         startDate: project.startDate.toISOString(),
         endDate: project.endDate?.toISOString(),
         status: project.status, // Ensure project.status is pulled if used
-        plannedPrice: project.plannedPrice ? formatCurrency(project.plannedPrice) : '', // Format if set
+        plannedPrice: project.plannedPrice
+          ? formatCurrency(project.plannedPrice)
+          : "", // Format if set
         customer: project.customer,
         totalInvoices,
         totalPending,
@@ -831,12 +858,14 @@ export async function fetchFilteredProjects(query: string, currentPage: number) 
       };
     });
   } catch (err) {
-    console.error('Database Error:', err);
-    throw new Error('Failed to fetch project table.');
+    console.error("Database Error:", err);
+    throw new Error("Failed to fetch project table.");
   }
 }
 
-export async function fetchProjectById(id: string): Promise<ProjectWithExtras | null> {
+export async function fetchProjectById(
+  id: string,
+): Promise<ProjectWithExtras | null> {
   try {
     const project = await prisma.project.findUnique({
       where: { id },
@@ -901,8 +930,8 @@ export async function fetchProjectById(id: string): Promise<ProjectWithExtras | 
 
     const workers = Array.from(
       new Map(
-        project.assignments.map((entry) => [entry.worker.id, entry.worker])
-      ).values()
+        project.assignments.map((entry) => [entry.worker.id, entry.worker]),
+      ).values(),
     );
 
     const services = project.services.map((s) => ({
@@ -921,16 +950,16 @@ export async function fetchProjectById(id: string): Promise<ProjectWithExtras | 
       plannedPrice: project.plannedPrice,
       customer: project.customer,
       address: project.address || {
-        street: '',
-        postalCode: '',
-        city: '',
+        street: "",
+        postalCode: "",
+        city: "",
       },
       workers,
       services,
     };
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch project.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch project.");
   }
 }
 
@@ -944,7 +973,7 @@ export async function loadProjects() {
       startDate: true,
       endDate: true,
     },
-    orderBy: { name: 'asc' },
+    orderBy: { name: "asc" },
   });
 }
 
@@ -989,7 +1018,7 @@ export async function fetchFilteredWorkers(query: string, currentPage: number) {
       ],
     },
     orderBy: {
-      createdAt: 'desc',
+      createdAt: "desc",
     },
     skip: offset,
     take: ITEMS_PER_PAGE,
@@ -1035,7 +1064,7 @@ export async function loadWorkers() {
       id: true,
       name: true,
     },
-    orderBy: { name: 'asc' },
+    orderBy: { name: "asc" },
   });
 }
 
@@ -1060,7 +1089,7 @@ export async function fetchWorkerById(id: string) {
             city: true,
           },
         },
-      }
+      },
     });
 
     if (!worker) {
@@ -1072,10 +1101,10 @@ export async function fetchWorkerById(id: string) {
       startDate: worker.startDate?.toISOString() ?? undefined,
       address: worker.address
         ? {
-          street: worker.address.street,
-          postalCode: worker.address.postalCode,
-          city: worker.address.city,
-        }
+            street: worker.address.street,
+            postalCode: worker.address.postalCode,
+            city: worker.address.city,
+          }
         : undefined,
     };
   } catch (error) {
@@ -1105,7 +1134,7 @@ export async function fetchWorkerById2(workerId: string) {
             city: true,
           },
         },
-      }
+      },
     });
 
     if (!worker) {
@@ -1117,10 +1146,10 @@ export async function fetchWorkerById2(workerId: string) {
       startDate: worker.startDate?.toISOString() ?? undefined,
       address: worker.address
         ? {
-          street: worker.address.street,
-          postalCode: worker.address.postalCode,
-          city: worker.address.city,
-        }
+            street: worker.address.street,
+            postalCode: worker.address.postalCode,
+            city: worker.address.city,
+          }
         : undefined,
     };
   } catch (error) {
@@ -1134,7 +1163,8 @@ export async function fetchWorkersAssignedToProject(projectId: string) {
     const assignments = await prisma.projectAssignment.findMany({
       where: {
         projectId,
-        worker: { // Filter related worker
+        worker: {
+          // Filter related worker
           isDeleted: false,
           isActive: true,
         },
@@ -1154,15 +1184,15 @@ export async function fetchWorkersAssignedToProject(projectId: string) {
     // --- OPTIMIZATION 2: Deduplicate workers ---
     // Use a Map to ensure unique workers based on their ID
     const uniqueWorkersMap = new Map<string, WorkerShort>();
-    assignments.forEach(assignment => {
+    assignments.forEach((assignment) => {
       // Assuming assignment.worker is already of type WorkerShort due to the select clause
       uniqueWorkersMap.set(assignment.worker.id, assignment.worker);
     });
 
     return Array.from(uniqueWorkersMap.values()); // Convert Map values back to an array
   } catch (error) {
-    console.error('Error fetching workers for project:', error);
-    throw new Error('Could not fetch assigned workers');
+    console.error("Error fetching workers for project:", error);
+    throw new Error("Could not fetch assigned workers");
   }
 }
 
@@ -1173,9 +1203,9 @@ export async function fetchWorkersPages(query: string) {
         AND: [
           {
             OR: [
-              { name: { contains: query, mode: 'insensitive' } },
-              { email: { contains: query, mode: 'insensitive' } },
-              { position: { contains: query, mode: 'insensitive' } },
+              { name: { contains: query, mode: "insensitive" } },
+              { email: { contains: query, mode: "insensitive" } },
+              { position: { contains: query, mode: "insensitive" } },
             ],
           },
           { isDeleted: false }, // Assuming you also have an isDeleted field on Worker
@@ -1185,8 +1215,8 @@ export async function fetchWorkersPages(query: string) {
 
     return Math.ceil(count / ITEMS_PER_PAGE);
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch total number of workers.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch total number of workers.");
   }
 }
 
@@ -1195,7 +1225,7 @@ export async function fetchWorkEntries(
   workerId: string,
   projectId: string,
   startDate: Date, // Changed from month: string
-  endDate: Date   // Changed from month: string
+  endDate: Date, // Changed from month: string
 ) {
   if (!workerId || !projectId || !startDate || !endDate) {
     return []; // Return empty array if parameters are missing
@@ -1208,32 +1238,36 @@ export async function fetchWorkEntries(
         projectId,
         date: {
           gte: startDate, // Use provided startDate
-          lte: endDate,   // Use provided endDate
+          lte: endDate, // Use provided endDate
         },
       },
-      select: { // Select only the fields needed for the grid
+      select: {
+        // Select only the fields needed for the grid
         date: true,
         isFullDay: true,
         notes: true,
       },
       orderBy: {
-        date: 'asc',
+        date: "asc",
       },
     });
 
     // Map to a simpler format for the client, if necessary
-    return workEntries.map(entry => ({
+    return workEntries.map((entry) => ({
       date: entry.date.toISOString(), // Ensure date is ISO string
       isFullDay: entry.isFullDay,
-      notes: entry.notes || '',
+      notes: entry.notes || "",
     }));
   } catch (error) {
-    console.error('Failed to fetch work entries:', error);
+    console.error("Failed to fetch work entries:", error);
     return [];
   }
 }
 
-export async function fetchWorkerLogs(workerId: string, selectedMonth: Date | null) {
+export async function fetchWorkerLogs(
+  workerId: string,
+  selectedMonth: Date | null,
+) {
   const monthStart = startOfMonth(selectedMonth ?? new Date());
   const monthEnd = endOfMonth(selectedMonth ?? new Date());
   try {
@@ -1244,9 +1278,8 @@ export async function fetchWorkerLogs(workerId: string, selectedMonth: Date | nu
           gte: monthStart,
           lte: monthEnd,
         },
-
       },
-      orderBy: { date: 'desc' },
+      orderBy: { date: "desc" },
       include: {
         project: {
           select: {
@@ -1261,17 +1294,16 @@ export async function fetchWorkerLogs(workerId: string, selectedMonth: Date | nu
       date: log.date.toISOString(), // Convert Date → string
     }));
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch worker logs.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch worker logs.");
   }
-
 }
 
 export async function fetchFilteredWorkerLogs(
   workerId: string,
   query: string,
   currentPage: number,
-  selectedMonth: Date | null = null
+  selectedMonth: Date | null = null,
 ) {
   try {
     const monthStart = startOfMonth(selectedMonth ?? new Date());
@@ -1318,16 +1350,16 @@ export async function fetchFilteredWorkerLogs(
     const parsedQueryDate = Date.parse(query);
     const textOrDateFilter = isNaN(parsedQueryDate)
       ? {
-        notes: {
-          contains: query,
-          mode: Prisma.QueryMode.insensitive,
-        },
-      }
+          notes: {
+            contains: query,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        }
       : {
-        date: {
-          equals: new Date(parsedQueryDate),
-        },
-      };
+          date: {
+            equals: new Date(parsedQueryDate),
+          },
+        };
 
     // Logs for table (filtered by selected month and query)
     const logs = await prisma.workEntry.findMany({
@@ -1339,7 +1371,7 @@ export async function fetchFilteredWorkerLogs(
         },
         ...(query ? textOrDateFilter : {}),
       },
-      orderBy: { date: 'desc' },
+      orderBy: { date: "desc" },
       skip: offset,
       take: ITEMS_PER_PAGE,
       include: {
@@ -1359,13 +1391,15 @@ export async function fetchFilteredWorkerLogs(
       logs,
     };
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch worker log data.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch worker log data.");
   }
 }
 
 // ****************** Services ******************
-export async function loadServices(projectId: string): Promise<ProjectService[]> {
+export async function loadServices(
+  projectId: string,
+): Promise<ProjectService[]> {
   try {
     const projectServices = await prisma.projectService.findMany({
       where: {
@@ -1386,8 +1420,8 @@ export async function loadServices(projectId: string): Promise<ProjectService[]>
 
     return formattedServices;
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch services for the project.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch services for the project.");
   }
 }
 // ****************** Vacations ******************
@@ -1441,14 +1475,17 @@ export async function fetchPendingPayments() {
   }
 }
 
-export async function getSalarySummaryByYear(workerId: string, year: number): Promise<SalarySummary[]> {
+export async function getSalarySummaryByYear(
+  workerId: string,
+  year: number,
+): Promise<SalarySummary[]> {
   // Fetch worker to get daily rate (already efficient)
   const worker = await prisma.worker.findUnique({
     where: { id: workerId },
     select: { dailyRate: true },
   });
 
-  if (!worker) throw new Error('Worker not found');
+  if (!worker) throw new Error("Worker not found");
 
   const dailyRate = worker.dailyRate;
 
@@ -1464,49 +1501,51 @@ export async function getSalarySummaryByYear(workerId: string, year: number): Pr
 
       // --- OPTIMIZATION: Use Prisma aggregates and select clauses ---
       // Combine multiple queries for the month into a single transaction
-      const [daysWorkedCountResult, totalPaidAggregateResult, paymentsData] = await prisma.$transaction([
-        // 1. Get count of work entries (for daysWorked)
-        prisma.workEntry.count({
-          where: {
-            workerId,
-            date: {
-              gte: start,
-              lte: end,
+      const [daysWorkedCountResult, totalPaidAggregateResult, paymentsData] =
+        await prisma.$transaction([
+          // 1. Get count of work entries (for daysWorked)
+          prisma.workEntry.count({
+            where: {
+              workerId,
+              date: {
+                gte: start,
+                lte: end,
+              },
             },
-          },
-        }),
-        // 2. Get sum of payment amounts (for totalPaid)
-        prisma.payment.aggregate({
-          where: {
-            workerId,
-            date: {
-              gte: start,
-              lte: end,
+          }),
+          // 2. Get sum of payment amounts (for totalPaid)
+          prisma.payment.aggregate({
+            where: {
+              workerId,
+              date: {
+                gte: start,
+                lte: end,
+              },
             },
-          },
-          _sum: {
-            amount: true,
-          },
-        }),
-        // 3. Fetch detailed payments with a specific select clause for the array
-        prisma.payment.findMany({
-          where: {
-            workerId,
-            date: {
-              gte: start,
-              lte: end,
+            _sum: {
+              amount: true,
             },
-          },
-          orderBy: { date: 'asc' },
-          select: { // <--- CRUCIAL: Only select needed fields for the payments array
-            id: true,
-            amount: true,
-            date: true,
-            status: true,
-            notes: true, // Assuming 'notes' is the field for the payment note
-          },
-        }),
-      ]);
+          }),
+          // 3. Fetch detailed payments with a specific select clause for the array
+          prisma.payment.findMany({
+            where: {
+              workerId,
+              date: {
+                gte: start,
+                lte: end,
+              },
+            },
+            orderBy: { date: "asc" },
+            select: {
+              // <--- CRUCIAL: Only select needed fields for the payments array
+              id: true,
+              amount: true,
+              date: true,
+              status: true,
+              notes: true, // Assuming 'notes' is the field for the payment note
+            },
+          }),
+        ]);
 
       const daysWorked = daysWorkedCountResult; // Direct count from DB
       const totalPaid = totalPaidAggregateResult._sum.amount ?? 0; // Sum from DB, handle null if no payments
@@ -1514,13 +1553,14 @@ export async function getSalarySummaryByYear(workerId: string, year: number): Pr
       const outstanding = payable - totalPaid;
 
       return {
-        month: monthStartDate.toLocaleString('default', { month: 'long' }),
+        month: monthStartDate.toLocaleString("default", { month: "long" }),
         daysWorked,
         dailyRate,
         payable,
         totalPaid,
         outstanding,
-        payments: paymentsData.map(p => ({ // Map the already optimized paymentsData
+        payments: paymentsData.map((p) => ({
+          // Map the already optimized paymentsData
           id: p.id,
           amount: p.amount,
           date: p.date.toISOString(),
@@ -1528,12 +1568,11 @@ export async function getSalarySummaryByYear(workerId: string, year: number): Pr
           note: p.notes ?? undefined, // Use p.notes if that's the field name
         })),
       };
-    })
+    }),
   );
 
   return summaries;
 }
-
 
 // ****************** Worker Vacations By Year ******************
 export async function getVacationsByYear(workerId: string, year: number) {
@@ -1558,7 +1597,7 @@ export async function getVacationsByYear(workerId: string, year: number) {
         },
       ],
     },
-    orderBy: { startDate: 'asc' },
+    orderBy: { startDate: "asc" },
   });
 
   return vacations;
@@ -1600,7 +1639,7 @@ export async function fetchWorkerHistory(workerId: string, year: number) {
         // notes: true, // Example: include notes if you display them
         // Add any other specific fields from Vacation that you need in the return
       },
-      orderBy: { startDate: 'asc' },
+      orderBy: { startDate: "asc" },
     }),
     // Fetch Work Entries for the year
     prisma.workEntry.findMany({
@@ -1611,14 +1650,15 @@ export async function fetchWorkerHistory(workerId: string, year: number) {
           lt: endDate, // Correctly includes all entries up to Dec 31st of the year
         },
       },
-      orderBy: { date: 'asc' },
+      orderBy: { date: "asc" },
       // --- OPTIMIZATION 3: Add select for WorkEntry fields ---
       select: {
         id: true,
         date: true, // Essential for 'workedDaysPerMonth' calculation and mapping
         // hours: true, // Example: if hours are displayed in the UI
         notes: true, // Example: if notes are displayed in the UI
-        project: { // This inclusion is fine, only selects id and name
+        project: {
+          // This inclusion is fine, only selects id and name
           select: {
             id: true,
             name: true,
@@ -1636,7 +1676,7 @@ export async function fetchWorkerHistory(workerId: string, year: number) {
 
   // Ensure unique days are counted even if multiple entries exist for one day
   const uniqueWorkedDates = new Set(
-    workEntries.map(entry => entry.date.toISOString().split('T')[0])
+    workEntries.map((entry) => entry.date.toISOString().split("T")[0]),
   );
 
   for (const dateStr of uniqueWorkedDates) {
@@ -1646,12 +1686,12 @@ export async function fetchWorkerHistory(workerId: string, year: number) {
   }
 
   return {
-    vacations: vacations.map(v => ({
+    vacations: vacations.map((v) => ({
       ...v,
       startDate: v.startDate.toISOString(),
       endDate: v.endDate.toISOString(),
     })),
-    workEntries: workEntries.map(w => ({
+    workEntries: workEntries.map((w) => ({
       ...w,
       date: w.date.toISOString(),
     })),
@@ -1661,10 +1701,16 @@ export async function fetchWorkerHistory(workerId: string, year: number) {
 }
 
 // ****************** WorkDetails By Date ******************
-export async function fetchWorkDetailsByMonth(workerId: string, year: number, month: number) {
+export async function fetchWorkDetailsByMonth(
+  workerId: string,
+  year: number,
+  month: number,
+) {
   const startDate = new Date(year, month - 1, 1); // JS month is 0-indexed
   const endDate = new Date(year, month, 1); // start of next month
-  console.log(`Fetching work details for worker ${workerId} from ${startDate.toISOString()} to ${endDate.toISOString()}`);
+  console.log(
+    `Fetching work details for worker ${workerId} from ${startDate.toISOString()} to ${endDate.toISOString()}`,
+  );
   const entries = await prisma.workEntry.findMany({
     where: {
       workerId,
@@ -1674,7 +1720,7 @@ export async function fetchWorkDetailsByMonth(workerId: string, year: number, mo
       },
     },
     orderBy: {
-      date: 'asc',
+      date: "asc",
     },
     include: {
       project: {
@@ -1685,11 +1731,11 @@ export async function fetchWorkDetailsByMonth(workerId: string, year: number, mo
     },
   });
 
-  return entries.map(entry => ({
+  return entries.map((entry) => ({
     id: entry.id,
     date: entry.date.toISOString(),
     isFullDay: entry.isFullDay,
-    notes: entry.notes || '',
+    notes: entry.notes || "",
     project: entry.project.name,
   }));
 }

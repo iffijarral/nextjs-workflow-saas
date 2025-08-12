@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 import {
   ProjectSchema,
@@ -7,9 +7,9 @@ import {
   ProjectAssignmentSchema,
   ParsedProjectService,
   DeleteSchema,
-} from '../schemas';
-import { revalidatePath } from 'next/cache';
-import { prisma } from '../prisma';
+} from "../schemas";
+import { revalidatePath } from "next/cache";
+import { prisma } from "../prisma";
 // import { redirect } from 'next/navigation';
 
 export type ProjectState = {
@@ -33,11 +33,11 @@ export type ProjectState = {
 
 export async function createProject(
   prevState: ProjectState,
-  formData: FormData
+  formData: FormData,
 ): Promise<ProjectState> {
   try {
     const raw = Object.fromEntries(formData.entries());
-    const workerIds = formData.getAll('workerIds') as string[];
+    const workerIds = formData.getAll("workerIds") as string[];
 
     // --- Parse dynamic services ---
     const rawServices: ParsedProjectService[] = [];
@@ -53,11 +53,11 @@ export async function createProject(
       }
 
       // Skip files (not expected here)
-      if (typeof value !== 'string') continue;
+      if (typeof value !== "string") continue;
 
-      if (field === 'quantity' || field === 'amount') {
+      if (field === "quantity" || field === "amount") {
         rawServices[i][field] = Number(value);
-      } else if (field === 'serviceId' || field === 'serviceName') {
+      } else if (field === "serviceId" || field === "serviceName") {
         rawServices[i][field] = value;
       }
     }
@@ -68,25 +68,21 @@ export async function createProject(
 
     if (!projectParse.success || !addressParse.success) {
       return {
-        message: 'Please fix validation errors.',
+        message: "Please fix validation errors.",
         errors: {
-          ...(projectParse.success ? {} : projectParse.error.flatten().fieldErrors),
+          ...(projectParse.success
+            ? {}
+            : projectParse.error.flatten().fieldErrors),
           ...(addressParse.success
             ? {}
             : {
-              address: addressParse.error.flatten().fieldErrors,
-            }),
+                address: addressParse.error.flatten().fieldErrors,
+              }),
         },
       };
     }
 
-    const {
-      name,
-      customerId,
-      status,
-      startDate,
-      endDate,
-    } = projectParse.data;
+    const { name, customerId, status, startDate, endDate } = projectParse.data;
 
     const { street, postalCode, city } = addressParse.data;
 
@@ -115,7 +111,9 @@ export async function createProject(
           }
 
           if (!serviceId) {
-            throw new Error('Service ID is missing and no service name provided.');
+            throw new Error(
+              "Service ID is missing and no service name provided.",
+            );
           }
 
           return {
@@ -123,10 +121,12 @@ export async function createProject(
             unitPrice: s.amount,
             quantity: s.quantity,
           };
-        })
+        }),
       );
 
-      const plannedPrice = resolvedServices.reduce((sum, s) => sum + s.unitPrice * s.quantity, 0) * 100;
+      const plannedPrice =
+        resolvedServices.reduce((sum, s) => sum + s.unitPrice * s.quantity, 0) *
+        100;
 
       const project = await tx.project.create({
         data: {
@@ -161,36 +161,33 @@ export async function createProject(
       }
     });
 
-    revalidatePath('/dashboard/projects');
+    revalidatePath("/dashboard/projects");
 
     return {
       message: null,
       success: true,
     };
   } catch (error) {
-    console.error('[CREATE_PROJECT_ERROR]', error);
+    console.error("[CREATE_PROJECT_ERROR]", error);
     return {
-      message: 'An unexpected error occurred while creating the project.',
+      message: "An unexpected error occurred while creating the project.",
       success: false,
     };
   }
 }
 
-
-
-
 // Update Project
 export async function updateProject(
   id: string,
   prevState: ProjectState,
-  formData: FormData
+  formData: FormData,
 ): Promise<ProjectState> {
   try {
     const raw = {
       ...Object.fromEntries(formData.entries()),
       id, // ✅ add bound ID here
     };
-    const workerIds = formData.getAll('workerIds') as string[];
+    const workerIds = formData.getAll("workerIds") as string[];
     // --- Parse dynamic services ---
     const rawServices: ParsedProjectService[] = [];
     for (const [key, value] of formData.entries()) {
@@ -205,11 +202,11 @@ export async function updateProject(
       }
 
       // Skip files (not expected here)
-      if (typeof value !== 'string') continue;
+      if (typeof value !== "string") continue;
 
-      if (field === 'quantity' || field === 'amount') {
+      if (field === "quantity" || field === "amount") {
         rawServices[i][field] = Number(value);
-      } else if (field === 'serviceId' || field === 'serviceName') {
+      } else if (field === "serviceId" || field === "serviceName") {
         rawServices[i][field] = value;
       }
     }
@@ -219,30 +216,30 @@ export async function updateProject(
     const addressParse = AddressSchema.safeParse(raw);
 
     if (!projectParse.success || !addressParse.success) {
-      console.error('Validation errors:', {
-        project: !projectParse.success ? projectParse.error.flatten().fieldErrors : {},
-        address: !addressParse.success ? addressParse.error.flatten().fieldErrors : {},
+      console.error("Validation errors:", {
+        project: !projectParse.success
+          ? projectParse.error.flatten().fieldErrors
+          : {},
+        address: !addressParse.success
+          ? addressParse.error.flatten().fieldErrors
+          : {},
       });
       return {
-        message: 'Please fix validation errors.',
+        message: "Please fix validation errors.",
         errors: {
-          ...(projectParse.success ? {} : projectParse.error.flatten().fieldErrors),
+          ...(projectParse.success
+            ? {}
+            : projectParse.error.flatten().fieldErrors),
           ...(addressParse.success
             ? {}
             : {
-              address: addressParse.error.flatten().fieldErrors,
-            }),
+                address: addressParse.error.flatten().fieldErrors,
+              }),
         },
       };
     }
 
-    const {
-      name,
-      customerId,
-      status,
-      startDate,
-      endDate,
-    } = projectParse.data;
+    const { name, customerId, status, startDate, endDate } = projectParse.data;
     const { street, postalCode, city } = addressParse.data;
 
     // --- Resolve service IDs (create if missing) ---
@@ -266,7 +263,9 @@ export async function updateProject(
         }
 
         if (!serviceId) {
-          throw new Error('Service ID is missing and no service name provided.');
+          throw new Error(
+            "Service ID is missing and no service name provided.",
+          );
         }
 
         return {
@@ -275,12 +274,12 @@ export async function updateProject(
           unitPrice: s.amount,
           quantity: s.quantity,
         };
-      })
+      }),
     );
 
     const plannedPrice = resolvedServices.reduce(
       (sum, s) => sum + s.unitPrice * s.quantity,
-      0
+      0,
     );
 
     // --- Transactional update ---
@@ -313,7 +312,10 @@ export async function updateProject(
           name,
           customerId,
           status,
-          startDate: (startDate ? new Date(startDate) : new Date()).toISOString(),
+          startDate: (startDate
+            ? new Date(startDate)
+            : new Date()
+          ).toISOString(),
           endDate: endDate ? new Date(endDate).toISOString() : undefined,
           addressId,
           plannedPrice,
@@ -336,15 +338,21 @@ export async function updateProject(
         const assignments = workerIds.map((workerId) => ({
           projectId: id,
           workerId,
-          startDate: (startDate ? new Date(startDate) : new Date()).toISOString(),
-          endDate: endDate && endDate !== '' ? new Date(endDate).toISOString() : undefined,
+          startDate: (startDate
+            ? new Date(startDate)
+            : new Date()
+          ).toISOString(),
+          endDate:
+            endDate && endDate !== ""
+              ? new Date(endDate).toISOString()
+              : undefined,
         }));
 
         for (const assignment of assignments) {
           const result = ProjectAssignmentSchema.safeParse(assignment);
           if (!result.success) {
-            console.log('Invalid assignment:', result.error);
-            throw new Error('Invalid worker assignment');
+            console.log("Invalid assignment:", result.error);
+            throw new Error("Invalid worker assignment");
           }
         }
 
@@ -352,39 +360,38 @@ export async function updateProject(
       }
     });
 
-    revalidatePath('/dashboard/projects');
+    revalidatePath("/dashboard/projects");
 
     return {
-      message: 'Project updated successfully!',
+      message: "Project updated successfully!",
       success: true,
     };
   } catch (error) {
-    console.error('[UPDATE_PROJECT_ERROR]', error);
+    console.error("[UPDATE_PROJECT_ERROR]", error);
     return {
-      message: 'An unexpected error occurred while updating the project.',
+      message: "An unexpected error occurred while updating the project.",
       success: false,
       errors: {
-        name: ['Could not update project in database.'],
+        name: ["Could not update project in database."],
       },
     };
   }
 }
-
 
 // ****************** Delete Project ******************
 
 export async function deleteProject(id: string) {
   // Validate if ID is a valid UUID (assuming your DB uses UUIDs for invoice IDs)
   const validatedFields = DeleteSchema.safeParse({
-    id
+    id,
   });
 
   if (!validatedFields.success) {
     console.error("Validation failed", validatedFields.error.format());
     return {
       error: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Delete Invoice.',
-      success: false
+      message: "Missing Fields. Failed to Delete Invoice.",
+      success: false,
     };
   }
   try {
@@ -404,15 +411,14 @@ export async function deleteProject(id: string) {
     return {
       error: {},
       success: true,
-      message: 'Project Deleted Successfully.',
+      message: "Project Deleted Successfully.",
     };
-
   } catch (error) {
     console.error("Error deleting project:", error);
     return {
       error: {},
       success: false,
-      message: 'Failed to Delete the Project.',
+      message: "Failed to Delete the Project.",
     };
   }
 }

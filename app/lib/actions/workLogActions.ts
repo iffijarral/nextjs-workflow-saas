@@ -1,9 +1,9 @@
-'use server';
+"use server";
 
-import { revalidatePath } from 'next/cache';
-import { prisma } from '../prisma';
-import { WorkEntrySchema } from '@/app/lib/schemas';
-import { parseISO } from 'date-fns';
+import { revalidatePath } from "next/cache";
+import { prisma } from "../prisma";
+import { WorkEntrySchema } from "@/app/lib/schemas";
+import { parseISO } from "date-fns";
 
 export type WorkLogState = {
   errors?: {
@@ -17,33 +17,38 @@ export type WorkLogState = {
 
 export async function createWorkLog(
   prevState: WorkLogState,
-  formData: FormData
+  formData: FormData,
 ): Promise<WorkLogState> {
-  const workerId = formData.get('workerId')?.toString();
-  const projectId = formData.get('projectId')?.toString();
+  const workerId = formData.get("workerId")?.toString();
+  const projectId = formData.get("projectId")?.toString();
   let entries: Array<{ date: string; isFullDay: boolean; note?: string }> = [];
 
-  const entriesRaw = formData.get('entries');
+  const entriesRaw = formData.get("entries");
   if (entriesRaw) {
     try {
       entries = JSON.parse(entriesRaw.toString());
     } catch (e) {
-      console.error('🔴 JSON parse error:', e);
+      console.error("🔴 JSON parse error:", e);
       return {
         success: false,
-        message: 'Invalid entry data format',
-        errors: { date: ['Could not parse work entries.'] },
+        message: "Invalid entry data format",
+        errors: { date: ["Could not parse work entries."] },
       };
     }
   }
 
-  const errors: WorkLogState['errors'] = {};
-  if (!workerId) errors.workerId = ['Worker is required.'];
-  if (!projectId) errors.projectId = ['Project is required.'];
-  if (entries.length === 0) errors.date = ['At least one entry must be selected.'];
+  const errors: WorkLogState["errors"] = {};
+  if (!workerId) errors.workerId = ["Worker is required."];
+  if (!projectId) errors.projectId = ["Project is required."];
+  if (entries.length === 0)
+    errors.date = ["At least one entry must be selected."];
 
   if (Object.keys(errors).length) {
-    return { success: false, message: 'Validation failed. Please correct the form.', errors };
+    return {
+      success: false,
+      message: "Validation failed. Please correct the form.",
+      errors,
+    };
   }
 
   const parsedEntries = entries.map((e) => ({
@@ -59,8 +64,8 @@ export async function createWorkLog(
     if (!result.success) {
       return {
         success: false,
-        message: 'Entry validation failed.',
-        errors: { date: ['One or more entries are invalid.'] },
+        message: "Entry validation failed.",
+        errors: { date: ["One or more entries are invalid."] },
       };
     }
   }
@@ -101,23 +106,23 @@ export async function createWorkLog(
             isFullDay: entry.isFullDay,
             notes: entry.notes || null,
           },
-        })
+        }),
       ),
     ]);
 
-    revalidatePath('/dashboard/workLogs');
+    revalidatePath("/dashboard/workLogs");
 
     return {
       success: true,
-      message: 'Work entries successfully saved!',
+      message: "Work entries successfully saved!",
       errors: {},
     };
   } catch (error) {
-    console.error('🔴 DB transaction error:', error);
+    console.error("🔴 DB transaction error:", error);
     return {
       success: false,
-      message: 'An unexpected error occurred while saving work entries.',
-      errors: { date: ['Database error. Please try again.'] },
+      message: "An unexpected error occurred while saving work entries.",
+      errors: { date: ["Database error. Please try again."] },
     };
   }
 }

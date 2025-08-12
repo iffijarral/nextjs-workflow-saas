@@ -1,6 +1,6 @@
 // Loading animation
 const shimmer =
-  'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent';
+  "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent";
 
 export function CardSkeleton() {
   return (
@@ -216,7 +216,7 @@ export function InvoicesTableSkeleton() {
     </div>
   );
 }
- 
+
 export function CustomerRowSkeleton() {
   return (
     <tr className="w-full border-b border-gray-100 last-of-type:border-none">
@@ -466,7 +466,6 @@ export function WorkerLogMobileSkeleton() {
   );
 }
 
-
 export function WorkerLogsTableSkeleton() {
   return (
     <div className="mt-6 flow-root">
@@ -549,12 +548,24 @@ export function ProjectsTableSkeleton() {
           <table className="hidden min-w-full text-gray-900 md:table">
             <thead className="rounded-lg text-left text-sm font-normal">
               <tr>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">Project</th>
-                <th scope="col" className="px-3 py-5 font-medium">Customer</th>
-                <th scope="col" className="px-3 py-5 font-medium">Start Date</th>
-                <th scope="col" className="px-3 py-5 font-medium">End Date</th>
-                <th scope="col" className="px-3 py-5 font-medium">Status</th>
-                <th scope="col" className="px-3 py-5 font-medium">Actions</th>
+                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                  Project
+                </th>
+                <th scope="col" className="px-3 py-5 font-medium">
+                  Customer
+                </th>
+                <th scope="col" className="px-3 py-5 font-medium">
+                  Start Date
+                </th>
+                <th scope="col" className="px-3 py-5 font-medium">
+                  End Date
+                </th>
+                <th scope="col" className="px-3 py-5 font-medium">
+                  Status
+                </th>
+                <th scope="col" className="px-3 py-5 font-medium">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white">
@@ -606,7 +617,10 @@ export function WorkLogTableSkeleton() {
           {/* Mobile Skeleton (Optional or Custom for smaller screens) */}
           <div className="md:hidden space-y-2">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-20 w-full rounded bg-white p-4 shadow-sm">
+              <div
+                key={i}
+                className="h-20 w-full rounded bg-white p-4 shadow-sm"
+              >
                 <div className="h-6 w-1/2 rounded bg-gray-100 mb-2" />
                 <div className="h-6 w-full rounded bg-gray-100" />
               </div>
@@ -627,11 +641,16 @@ export function WorkLogTableSkeleton() {
               <thead className="rounded-lg text-left text-sm font-normal bg-gray-50">
                 <tr>
                   {days.map((day) => (
-                    <th key={day} className="px-4 py-4 text-center font-medium text-gray-500">
+                    <th
+                      key={day}
+                      className="px-4 py-4 text-center font-medium text-gray-500"
+                    >
                       {day}
                     </th>
                   ))}
-                  <th className="px-4 py-4 text-center font-medium text-gray-500">Total</th>
+                  <th className="px-4 py-4 text-center font-medium text-gray-500">
+                    Total
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white">
@@ -655,7 +674,10 @@ export function WorkLogTableSkeleton() {
                 ))}
                 {/* Footer Row */}
                 <tr className="bg-gray-50">
-                  <td colSpan={7} className="p-4 text-right font-medium text-gray-500">
+                  <td
+                    colSpan={7}
+                    className="p-4 text-right font-medium text-gray-500"
+                  >
                     Monthly Total
                   </td>
                   <td className="p-4 text-center">

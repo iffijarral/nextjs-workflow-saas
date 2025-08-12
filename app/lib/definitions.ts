@@ -9,7 +9,7 @@ export type Customer = {
   id: string;
   name: string;
   email: string;
-  type: 'private' | 'company';
+  type: "private" | "company";
   cvr_number?: string | null;
   addresses: Address[];
   is_deleted: boolean;
@@ -21,7 +21,7 @@ export type Address = {
   postalCode: string;
   city: string;
   isPrimary?: boolean;
-}
+};
 
 export type Revenue = {
   month: string;
@@ -34,7 +34,7 @@ export type LatestInvoice = {
   email: string;
 };
 
-export type LatestInvoiceRaw = Omit<LatestInvoice, 'amount'> & {
+export type LatestInvoiceRaw = Omit<LatestInvoice, "amount"> & {
   amount: number;
 };
 
@@ -42,11 +42,12 @@ export type LatestInvoiceRaw = Omit<LatestInvoice, 'amount'> & {
 export type Invoice = {
   id: string;
   customerId?: string;
-  status: 'pending' | 'paid';
+  status: "pending" | "paid";
   date: Date;
   isDeleted: boolean;
-  services: InvoiceService[];  // Relation to InvoiceService model
-  customer: {            // Include customer information in Invoice type
+  services: InvoiceService[]; // Relation to InvoiceService model
+  customer: {
+    // Include customer information in Invoice type
     name: string;
     email: string;
     addresses: Address[]; // Array of customer addresses
@@ -57,15 +58,15 @@ export type InvoiceService = {
   id: string;
   invoiceId: string;
   serviceId: string;
-  amount: number;  // Amount is now part of InvoiceService
+  amount: number; // Amount is now part of InvoiceService
   quantity: number; // Quantity of the service
-  service: Service;  // The service related to this InvoiceService
+  service: Service; // The service related to this InvoiceService
 };
 
 export type Service = {
   id: string;
   name: string;
-  services?: InvoiceService[];  // This relationship is not necessary to include in the type, but it reflects the relationship in the schema
+  services?: InvoiceService[]; // This relationship is not necessary to include in the type, but it reflects the relationship in the schema
 };
 
 // Updated CustomersTableType to reflect the correct service data
@@ -78,7 +79,7 @@ export type CustomersTableType = {
   total_invoices?: number;
   total_pending?: number;
   total_paid?: number;
-  invoices?: Invoice[];  // Referring to the Invoice model
+  invoices?: Invoice[]; // Referring to the Invoice model
 };
 
 export type FormattedCustomersTable = {
@@ -98,14 +99,14 @@ export type FormattedCustomersTable = {
 export type InvoiceForm = {
   id?: string;
   customerId?: string;
-  status: 'pending' | 'paid';
+  status: "pending" | "paid";
   services: {
-    id: string;        // Unique ID for this service item (use uuid or similar)
+    id: string; // Unique ID for this service item (use uuid or similar)
     invoiceId: string; // ID of the invoice this service belongs to
     serviceId: string; // ID of the service (it refers to the Service model)
-    amount: number;    // The cost of the service
-    quantity: number;  // Quantity of the service
-    service: Service;  // The actual Service object associated with this InvoiceService
+    amount: number; // The cost of the service
+    quantity: number; // Quantity of the service
+    service: Service; // The actual Service object associated with this InvoiceService
   }[]; // Contains services linked to the invoice
 };
 
@@ -118,7 +119,7 @@ export type FakturaEmail = {
   };
   services: InvoiceService[];
   invoiceId: string; // ID of the invoice
-}
+};
 
 // Existing CustomerField remains mostly the same
 export type CustomerField = {
@@ -127,7 +128,7 @@ export type CustomerField = {
   email: string;
   phone: string;
   cvr_number?: string | null;
-  type: 'private' | 'company';  
+  type: "private" | "company";
   isDeleted: boolean;
   addresses: Address[];
 };
@@ -151,14 +152,14 @@ export type Worker = {
   id: string;
   name: string;
   email: string;
-  phone: string;  // Optional phone number
+  phone: string; // Optional phone number
   position: string;
-  hourlyRate: number;  // In smallest currency unit (øre/cent)
+  hourlyRate: number; // In smallest currency unit (øre/cent)
   startDate: Date;
   isActive: boolean;
-  workLogs: WorkLog[];  // Array of WorkLog objects
-  vacations: Vacation[];  // Array of Vacation objects
-  payments: Payment[];  // Array of Payment objects
+  workLogs: WorkLog[]; // Array of WorkLog objects
+  vacations: Vacation[]; // Array of Vacation objects
+  payments: Payment[]; // Array of Payment objects
 };
 export type WorkerListItem = {
   id: string;
@@ -172,28 +173,25 @@ export type WorkerListItem = {
 // WorkLog Type
 export type WorkLog = {
   id: string;
-  workerId: string;  // ID of the worker this work log belongs to
-  date: Date;  // Date of the work performed
-  hours: number;  // Number of hours worked
-  notes?: string;  // Optional notes for the work log
-  worker: Worker;  // The worker associated with the work log (if you want to include this)
+  workerId: string; // ID of the worker this work log belongs to
+  date: Date; // Date of the work performed
+  hours: number; // Number of hours worked
+  notes?: string; // Optional notes for the work log
+  worker: Worker; // The worker associated with the work log (if you want to include this)
 };
 
 // Vacation Type
 
-
 // Payment Type
 export type Payment = {
   id: string;
-  workerId: string;  // ID of the worker receiving payment
-  amount: number;  // Payment amount (calculated from hourly rate * hours worked)
-  date: Date;  // Date the payment was made
-  status: 'paid' | 'pending' | 'partial';  // Payment status
-  notes?: string;  // Optional notes regarding the payment
-  worker: Worker;  // The worker associated with the payment (if you want to include this)
+  workerId: string; // ID of the worker receiving payment
+  amount: number; // Payment amount (calculated from hourly rate * hours worked)
+  date: Date; // Date the payment was made
+  status: "paid" | "pending" | "partial"; // Payment status
+  notes?: string; // Optional notes regarding the payment
+  worker: Worker; // The worker associated with the payment (if you want to include this)
 };
-
-
 
 /******************** Customer Related Types ********************/
 // For Creating a Customer
@@ -201,7 +199,7 @@ export type CreateCustomerInput = {
   name: string;
   email: string;
   phone: string;
-  type: 'private' | 'company';
+  type: "private" | "company";
   cvrNumber?: string | null;
   address: CreateAddressInput | null; // Address is optional for creation
 };
@@ -217,7 +215,7 @@ export type CustomerTableRow = {
   name: string;
   email: string;
   phone: string;
-  type: 'private' | 'company';
+  type: "private" | "company";
   cvrNumber?: string | null;
   address: AddressTableRow; // nested type
   createdAt: string;
@@ -229,7 +227,7 @@ export type CustomerTableRowShort = {
   name: string;
   email: string;
   phone: string;
-}
+};
 /******************** Project Related Types ********************/
 
 export type ProjectWithExtras = {
@@ -253,7 +251,7 @@ export type ProjectWithExtras = {
   workers: { id: string; name: string }[];
   services: {
     id: string;
-    name: string;    
+    name: string;
     unitPrice: number;
     quantity: number;
   }[];
@@ -376,22 +374,22 @@ export type AddressTableRow = {
 export type CreateInvoiceInput = {
   projectId: string;
   date: string; // ISO format
-  status: 'pending' | 'paid';
+  status: "pending" | "paid";
 };
 
 export type UpdateInvoiceInput = Partial<CreateInvoiceInput> & {
   id: string;
   services: {
-    id: string;        // Unique ID for this service item (use uuid or similar)    
-    amount: number;    // The cost of the service
-    quantity: number;  // Quantity of the service
-    service: ServiceTableRow;  // The actual Service object associated with this InvoiceService
+    id: string; // Unique ID for this service item (use uuid or similar)
+    amount: number; // The cost of the service
+    quantity: number; // Quantity of the service
+    service: ServiceTableRow; // The actual Service object associated with this InvoiceService
   }[]; // Contains services linked to the invoice
 }; // Array of services to be included in the invoice
 
 export type InvoiceSummaryRow = {
   id: string;
-  status: 'pending' | 'paid';
+  status: "pending" | "paid";
   isDeleted: boolean;
   // services: {
   //   amount: number;
@@ -413,7 +411,7 @@ export type InvoiceTableRow = {
     };
   };
   date: string;
-  status: 'pending' | 'paid';
+  status: "pending" | "paid";
   isDeleted: boolean;
   totalAmount: number;
   services: InvoiceServiceTableRow[];
@@ -468,7 +466,7 @@ export class AuthError extends Error {
   type: string;
   constructor(type: string, message?: string) {
     super(message);
-    this.name = 'AuthError';
+    this.name = "AuthError";
     this.type = type;
   }
 }
@@ -487,16 +485,16 @@ export type SalaryPayment = {
   id: string;
   amount: number;
   date: string;
-  status: 'paid' | 'pending' | 'partial';
+  status: "paid" | "pending" | "partial";
   note?: string;
 };
 
 export type Vacation = {
   id: string;
-  workerId: string;  // ID of the worker requesting vacation
-  startDate: string;  // Start date of the vacation
-  endDate: string;  // End date of the vacation
-  approved: boolean;  // Whether the vacation has been approved
-  reason?: string | null;  // Optional reason for the vacation
-  worker: WorkerShort;  // The worker associated with the vacation (if you want to include this)
+  workerId: string; // ID of the worker requesting vacation
+  startDate: string; // Start date of the vacation
+  endDate: string; // End date of the vacation
+  approved: boolean; // Whether the vacation has been approved
+  reason?: string | null; // Optional reason for the vacation
+  worker: WorkerShort; // The worker associated with the vacation (if you want to include this)
 };

@@ -19,9 +19,9 @@ import React from "react"; // Keep React imported
 export function FakturaEmail({ name }: { name: string }) {
   // Define custom colors or use Tailwind's default palette
   // For custom colors, ensure they are defined in your tailwind.config.js
-  const brandBlue = 'bg-[#007bff]'; // Example: your brand blue
-  const brandTextColor = 'text-[#2c3e50]'; // Example: a dark text color
-  const lightBgColor = 'bg-[#f8f9fa]'; // Example: a light background color
+  const brandBlue = "bg-[#007bff]"; // Example: your brand blue
+  const brandTextColor = "text-[#2c3e50]"; // Example: a dark text color
+  const lightBgColor = "bg-[#f8f9fa]"; // Example: a light background color
 
   return (
     <Html>
@@ -43,7 +43,9 @@ export function FakturaEmail({ name }: { name: string }) {
                 />
               </Column>
               <Column align="right">
-                <Text className={`text-2xl font-bold ${brandBlue.replace('bg-', 'text-')} m-0 leading-tight`}>
+                <Text
+                  className={`text-2xl font-bold ${brandBlue.replace("bg-", "text-")} m-0 leading-tight`}
+                >
                   RAH Maler 🎉
                 </Text>
               </Column>
@@ -56,44 +58,61 @@ export function FakturaEmail({ name }: { name: string }) {
               Hej {name},
             </Text>
 
-            <Text className={`text-base ${brandTextColor} my-4 leading-relaxed`}>
+            <Text
+              className={`text-base ${brandTextColor} my-4 leading-relaxed`}
+            >
               Tak for din tillid til RAH Maler.
             </Text>
 
-            <Text className={`text-base ${brandTextColor} my-4 leading-relaxed`}>
-              Vedhæftet finder du fakturaen for det udførte arbejde. Du er velkommen til at vende tilbage, hvis du har spørgsmål til indholdet.
+            <Text
+              className={`text-base ${brandTextColor} my-4 leading-relaxed`}
+            >
+              Vedhæftet finder du fakturaen for det udførte arbejde. Du er
+              velkommen til at vende tilbage, hvis du har spørgsmål til
+              indholdet.
             </Text>
 
-            <Text className={`text-base ${brandTextColor} my-4 leading-relaxed`}>
-              Betalingsoplysninger og beløb fremgår af fakturaen. Vi sætter stor pris på din betaling inden for den angivne frist.
+            <Text
+              className={`text-base ${brandTextColor} my-4 leading-relaxed`}
+            >
+              Betalingsoplysninger og beløb fremgår af fakturaen. Vi sætter stor
+              pris på din betaling inden for den angivne frist.
             </Text>
 
-            <Text className={`text-base ${brandTextColor} my-4 leading-relaxed`}>
+            <Text
+              className={`text-base ${brandTextColor} my-4 leading-relaxed`}
+            >
               På forhånd tak – og tak for samarbejdet!
             </Text>
           </Section>
 
           {/* Footer Section */}
           <Section className="p-5 text-center text-gray-600 text-sm">
-            <Hr className="border-t border-gray-300 my-6" /> {/* Tailwind for Hr */}
+            <Hr className="border-t border-gray-300 my-6" />{" "}
+            {/* Tailwind for Hr */}
             <Text className={`m-0 text-base ${brandTextColor}`}>
               Med venlig hilsen,
               <br />
-              <strong className={brandBlue.replace('bg-', 'text-')}>Khadim Hussain</strong>
+              <strong className={brandBlue.replace("bg-", "text-")}>
+                Khadim Hussain
+              </strong>
               <br />
               RAH Maler
             </Text>
-
             <Text className="m-0 mt-2">
-              <Link href={`mailto:info@rahmaler.dk`} className={`${brandBlue.replace('bg-', 'text-')} underline`}>
+              <Link
+                href={`mailto:info@rahmaler.dk`}
+                className={`${brandBlue.replace("bg-", "text-")} underline`}
+              >
                 info@rahmaler.dk
               </Link>
             </Text>
-
             {/* Your Image Column */}
             <Row className="mt-5">
               <Column>
-                <Link href="#"> {/* Consider replacing '#' with your website link */}
+                <Link href="#">
+                  {" "}
+                  {/* Consider replacing '#' with your website link */}
                   <Img
                     alt="RAH Maler Project Showcase"
                     src="https://images.unsplash.com/photo-1582234057997-6a5b6f3c1b6a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -104,9 +123,9 @@ export function FakturaEmail({ name }: { name: string }) {
                 </Link>
               </Column>
             </Row>
-
             <Text className="mt-5 text-xs text-gray-500">
-              &copy; {new Date().getFullYear()} RAH Maler. Alle rettigheder forbeholdt.
+              &copy; {new Date().getFullYear()} RAH Maler. Alle rettigheder
+              forbeholdt.
             </Text>
           </Section>
         </Container>

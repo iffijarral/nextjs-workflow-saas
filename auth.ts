@@ -1,9 +1,9 @@
-import NextAuth from 'next-auth';
-import Credentials from 'next-auth/providers/credentials';
-import { authConfig } from './auth.config';
-import { z } from 'zod';
-import bcrypt from 'bcryptjs'; // bcryptjs is fine too
-import { prisma } from './app/lib/prisma';
+import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+import { authConfig } from "./auth.config";
+import { z } from "zod";
+import bcrypt from "bcryptjs"; // bcryptjs is fine too
+import { prisma } from "./app/lib/prisma";
 
 async function getUser(email: string) {
   return await prisma.user.findUnique({
@@ -24,7 +24,7 @@ export const { auth, signIn, signOut } = NextAuth({
           .safeParse(credentials);
 
         if (!parsedCredentials.success) {
-          console.log('Failed to parse credentials');
+          console.log("Failed to parse credentials");
           return null;
         }
 
@@ -32,14 +32,14 @@ export const { auth, signIn, signOut } = NextAuth({
         const user = await getUser(email);
 
         if (!user) {
-          console.log('No user found');
+          console.log("No user found");
           return null;
         }
 
         const passwordsMatch = await bcrypt.compare(password, user.password);
 
         if (!passwordsMatch) {
-          console.log('Password mismatch');
+          console.log("Password mismatch");
           return null;
         }
 
@@ -54,7 +54,6 @@ export const { auth, signIn, signOut } = NextAuth({
   ],
 });
 
-
 // import NextAuth from "next-auth";
 // import CredentialsProvider from "next-auth/providers/credentials";
 // import { prisma } from "./app/lib/prisma";
@@ -64,14 +63,14 @@ export const { auth, signIn, signOut } = NextAuth({
 
 // async function getUser(email: string) {
 //   return await prisma.user.findUnique({
-//     where: { email }, 
+//     where: { email },
 //   });
 // }
 // console.log("Decoded JWT Test:", jwt.decode(process.env.NEXTAUTH_SECRET || ""));
-// export const { auth, signIn, signOut } = NextAuth({  
+// export const { auth, signIn, signOut } = NextAuth({
 //   debug: true,
-//   secret: process.env.NEXTAUTH_SECRET,  
-  
+//   secret: process.env.NEXTAUTH_SECRET,
+
 //   providers: [
 //     CredentialsProvider({
 //       async authorize(credentials) {
@@ -96,5 +95,5 @@ export const { auth, signIn, signOut } = NextAuth({
 //   session: {
 //     strategy: "jwt",
 //   },
-  
+
 // });

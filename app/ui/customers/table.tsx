@@ -1,6 +1,6 @@
-import { fetchFilteredCustomers } from '@/app/lib/data';
-import { Update } from '../buttons/update';
-import { Delete } from '../buttons/action-buttons';
+import { fetchFilteredCustomers } from "@/app/lib/data";
+import { Update } from "../buttons/update";
+import { Delete } from "../buttons/action-buttons";
 
 export default async function CustomersTable({
   query,
@@ -32,13 +32,17 @@ export default async function CustomersTable({
                 <div className="flex w-full items-center justify-between pt-4">
                   <div>
                     <p className="text-xl font-medium">
-                      {customer.totalPending ?? 'N/A'}
+                      {customer.totalPending ?? "N/A"}
                     </p>
                     <p>{customer.totalPaid}</p>
                   </div>
                   <div className="flex justify-end gap-2">
-                    {customer.id && <Update id={customer.id} route="customers" />}
-                    {customer.id && <Delete id={customer.id} route='customer' />}
+                    {customer.id && (
+                      <Update id={customer.id} route="customers" />
+                    )}
+                    {customer.id && (
+                      <Delete id={customer.id} route="customer" />
+                    )}
                   </div>
                 </div>
               </div>
@@ -100,8 +104,12 @@ export default async function CustomersTable({
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">
-                      {customer.id && <Update id={customer.id} route="customers" />}
-                      {customer.id && <Delete id={customer.id} route='customer' />}
+                      {customer.id && (
+                        <Update id={customer.id} route="customers" />
+                      )}
+                      {customer.id && (
+                        <Delete id={customer.id} route="customer" />
+                      )}
                     </div>
                   </td>
                 </tr>

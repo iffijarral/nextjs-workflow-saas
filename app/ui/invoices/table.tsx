@@ -1,9 +1,9 @@
-import { UpdateInvoice } from '@/app/ui/invoices/buttons';
-import InvoiceStatus from '@/app/ui/invoices/status';
-import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
-import { fetchFilteredInvoices } from '@/app/lib/data';
-import { Delete, SendMail } from '../buttons/action-buttons';
-import { InvoiceTableRow } from '@/app/lib/definitions';
+import { UpdateInvoice } from "@/app/ui/invoices/buttons";
+import InvoiceStatus from "@/app/ui/invoices/status";
+import { formatDateToLocal, formatCurrency } from "@/app/lib/utils";
+import { fetchFilteredInvoices } from "@/app/lib/data";
+import { Delete, SendMail } from "../buttons/action-buttons";
+import { InvoiceTableRow } from "@/app/lib/definitions";
 // import { InvoicesTableType } from '@/app/lib/definitions';
 
 export default async function InvoicesTable({
@@ -11,16 +11,19 @@ export default async function InvoicesTable({
   currentPage,
 }: {
   query: string;
-  currentPage: number; 
+  currentPage: number;
 }) {
-  const { invoices }: { invoices: InvoiceTableRow[] }  = await fetchFilteredInvoices(query, currentPage);
+  const { invoices }: { invoices: InvoiceTableRow[] } =
+    await fetchFilteredInvoices(query, currentPage);
 
   return (
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
           {invoices?.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">No data available</div>
+            <div className="text-center py-8 text-gray-500">
+              No data available
+            </div>
           ) : (
             <>
               {/* Mobile view */}
@@ -35,14 +38,21 @@ export default async function InvoicesTable({
                         <div className="mb-2 flex items-center">
                           <p>{invoice.project.customer.name}</p>
                         </div>
-                        <p className="text-sm text-gray-500">{invoice.project.customer.email}</p>
+                        <p className="text-sm text-gray-500">
+                          {invoice.project.customer.email}
+                        </p>
                       </div>
                       <InvoiceStatus status={invoice.status} />
                     </div>
                     <div className="flex w-full items-center justify-between pt-4">
                       <div>
                         <p className="text-xl font-medium">
-                          {formatCurrency(invoice.services.reduce((acc, service) => acc + service.amount, 0))}
+                          {formatCurrency(
+                            invoice.services.reduce(
+                              (acc, service) => acc + service.amount,
+                              0,
+                            ),
+                          )}
                         </p>
                         <p>{formatDateToLocal(invoice.date.toString())}</p>
                       </div>
@@ -143,7 +153,6 @@ export default async function InvoicesTable({
             </>
           )}
         </div>
-
       </div>
     </div>
   );

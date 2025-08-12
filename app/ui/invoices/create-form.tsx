@@ -1,17 +1,17 @@
-'use client';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useActionState, useEffect, useState } from 'react';
-import { ProjectService, ProjectShort } from '@/app/lib/definitions';
-import { createInvoice, State } from '@/app/lib/actions/invoiceActions';
-import { Button } from '@/app/ui/button';
-import Link from 'next/link';
+"use client";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useActionState, useEffect, useState } from "react";
+import { ProjectService, ProjectShort } from "@/app/lib/definitions";
+import { createInvoice, State } from "@/app/lib/actions/invoiceActions";
+import { Button } from "@/app/ui/button";
+import Link from "next/link";
 import {
   CheckIcon,
   ClockIcon,
   BuildingOfficeIcon,
   PlusIcon,
   TrashIcon,
-} from '@heroicons/react/24/outline';
+} from "@heroicons/react/24/outline";
 
 export default function Form({
   projects,
@@ -27,9 +27,9 @@ export default function Form({
 
   const initialState: State = { message: null, errors: {} };
   const [state, formAction] = useActionState(createInvoice, initialState);
-  
+
   const [serviceRows, setServiceRows] = useState([
-    { serviceId: '', serviceName: '', quantity: '', amount: '' },
+    { serviceId: "", serviceName: "", quantity: "", amount: "" },
   ]);
 
   // Load services when project changes
@@ -38,25 +38,30 @@ export default function Form({
     const related = services.filter((s) => s.projectId === selectedProjectId);
     const formatted = related.map((s) => ({
       serviceId: s.id,
-      serviceName: '',
-      quantity: s.quantity?.toString() || '',
-      amount: s.unitPrice?.toString() || '',
+      serviceName: "",
+      quantity: s.quantity?.toString() || "",
+      amount: s.unitPrice?.toString() || "",
     }));
-    setServiceRows(formatted.length > 0 ? formatted : [
-      { serviceId: '', serviceName: '', quantity: '', amount: '' },
-    ]);
+    setServiceRows(
+      formatted.length > 0
+        ? formatted
+        : [{ serviceId: "", serviceName: "", quantity: "", amount: "" }],
+    );
   }, [selectedProjectId, services]);
 
   const addServiceRow = () =>
-    setServiceRows([...serviceRows, { serviceId: '', serviceName: '', quantity: '', amount: '' }]);
+    setServiceRows([
+      ...serviceRows,
+      { serviceId: "", serviceName: "", quantity: "", amount: "" },
+    ]);
 
   const removeServiceRow = (index: number) =>
     setServiceRows(serviceRows.filter((_, i) => i !== index));
 
   const handleChange = (
     index: number,
-    field: 'serviceId' | 'serviceName' | 'quantity' | 'amount',
-    value: string
+    field: "serviceId" | "serviceName" | "quantity" | "amount",
+    value: string,
   ) => {
     const updated = [...serviceRows];
     updated[index][field] = value;
@@ -66,7 +71,7 @@ export default function Form({
   const handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const projectId = e.target.value;
     const params = new URLSearchParams(searchParams.toString());
-    params.set('projectId', projectId);
+    params.set("projectId", projectId);
     router.replace(`/dashboard/invoices/create?${params.toString()}`);
   };
 
@@ -118,7 +123,9 @@ export default function Form({
                 <select
                   name={`services[${index}][serviceId]`}
                   value={row.serviceId}
-                  onChange={(e) => handleChange(index, 'serviceId', e.target.value)}
+                  onChange={(e) =>
+                    handleChange(index, "serviceId", e.target.value)
+                  }
                   className="flex-1 rounded-md border border-gray-300 p-2 text-sm"
                 >
                   <option value="">Select service</option>
@@ -133,7 +140,9 @@ export default function Form({
                   type="text"
                   name={`services[${index}][serviceName]`}
                   value={row.serviceName}
-                  onChange={(e) => handleChange(index, 'serviceName', e.target.value)}
+                  onChange={(e) =>
+                    handleChange(index, "serviceName", e.target.value)
+                  }
                   className="flex-1 rounded-md border border-gray-300 p-2 text-sm"
                   placeholder="Or enter new service"
                 />
@@ -142,7 +151,9 @@ export default function Form({
                   type="number"
                   name={`services[${index}][quantity]`}
                   value={row.quantity}
-                  onChange={(e) => handleChange(index, 'quantity', e.target.value)}
+                  onChange={(e) =>
+                    handleChange(index, "quantity", e.target.value)
+                  }
                   className="w-24 rounded-md border border-gray-300 p-2 text-sm"
                   placeholder="Qty"
                 />
@@ -150,7 +161,9 @@ export default function Form({
                   type="number"
                   name={`services[${index}][amount]`}
                   value={row.amount}
-                  onChange={(e) => handleChange(index, 'amount', e.target.value)}
+                  onChange={(e) =>
+                    handleChange(index, "amount", e.target.value)
+                  }
                   className="w-24 rounded-md border border-gray-300 p-2 text-sm"
                   placeholder="Amount"
                 />
@@ -182,7 +195,7 @@ export default function Form({
           <legend className="mb-2 block text-sm font-medium">Status</legend>
           <div className="rounded-md border border-gray-200 bg-white px-[14px] py-3">
             <div className="flex gap-4">
-              {['pending', 'paid'].map((status) => (
+              {["pending", "paid"].map((status) => (
                 <div className="flex items-center" key={status}>
                   <input
                     id={status}
@@ -195,11 +208,17 @@ export default function Form({
                   <label
                     htmlFor={status}
                     className={`ml-2 flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium ${
-                      status === 'paid' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600'
+                      status === "paid"
+                        ? "bg-green-500 text-white"
+                        : "bg-gray-100 text-gray-600"
                     }`}
                   >
-                    {status === 'paid' ? 'Paid' : 'Pending'}{' '}
-                    {status === 'paid' ? <CheckIcon className="h-4 w-4" /> : <ClockIcon className="h-4 w-4" />}
+                    {status === "paid" ? "Paid" : "Pending"}{" "}
+                    {status === "paid" ? (
+                      <CheckIcon className="h-4 w-4" />
+                    ) : (
+                      <ClockIcon className="h-4 w-4" />
+                    )}
                   </label>
                 </div>
               ))}

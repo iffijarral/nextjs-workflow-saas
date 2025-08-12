@@ -1,10 +1,10 @@
-'use server';
+"use server";
 
 // import { revalidatePath } from 'next/cache';
 // import { redirect } from 'next/navigation';
 // import postgres from 'postgres';
-import { signIn } from '@/auth';
-import { AuthError } from 'next-auth';
+import { signIn } from "@/auth";
+import { AuthError } from "next-auth";
 // import { AuthError } from 'next-auth';
 // import { Resend } from 'resend';
 // import { InvoiceFormSchema, EmailFormSchema, CreateCustomerSchema, EditCustomerSchema, DeleteSchema, WorkerSchema } from '@/app/lib/schemas';
@@ -16,7 +16,6 @@ import { AuthError } from 'next-auth';
 // import { errorToJSON } from 'next/dist/server/render';
 // import { FakturaEmail } from '@/app/dashboard/emails/templates/FakturaEmail';
 // import Faktura from '../generate-pdf';
-
 
 // const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -117,8 +116,6 @@ import { AuthError } from 'next-auth';
 //     }
 // }
 
-
-
 // // Use Zod to update the expected types
 // const UpdateInvoice = InvoiceFormSchema.omit({ id: true, date: true });
 
@@ -217,22 +214,19 @@ import { AuthError } from 'next-auth';
 //     // redirect('/dashboard/invoices');
 // }
 
-
-
-
 export async function authenticate(
   prevState: string | undefined,
   formData: FormData,
 ) {
   try {
-    await signIn('credentials', formData);
+    await signIn("credentials", formData);
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
-        case 'CredentialsSignin':
-          return 'Invalid credentials.';
+        case "CredentialsSignin":
+          return "Invalid credentials.";
         default:
-          return 'Something went wrong.';
+          return "Something went wrong.";
       }
     }
     throw error;
@@ -400,7 +394,6 @@ export async function authenticate(
 //     }
 // }
 
-
 // // ****************** Customers Actions ******************
 
 // // Customer State
@@ -420,9 +413,7 @@ export async function authenticate(
 //     message?: string | null;
 // };
 
-
 // export async function createCustomer(prevState: CustomerState, formData: FormData) {
-
 
 //     // Extract addresses
 //     const formAddresses: Address[] = [];
@@ -475,7 +466,6 @@ export async function authenticate(
 //             message: 'Missing Fields. Failed to Create Customer.',
 //         };
 //     }
-
 
 //     // Prepare data for insertion into the database
 //     const { name, email, type, addresses } = validatedFields.data;
@@ -694,7 +684,6 @@ export async function authenticate(
 //     }
 // }
 
-
 // // ****************** Worker Actions ******************
 
 // // Worker State
@@ -712,7 +701,7 @@ export async function authenticate(
 
 // // Create Worker
 // export async function createWorker(prevState: WorkerState, formData: FormData) {
-    
+
 //     const dateString = formData.get('startDate')?.toString() || new Date().toISOString();
 //     const dateObject = new Date(dateString);
 //     const validatedFields = WorkerSchema.safeParse({
@@ -725,7 +714,7 @@ export async function authenticate(
 //     });
 
 //     if (!validatedFields.success) {
-//         const fieldErrors = validatedFields.error.flatten().fieldErrors;        
+//         const fieldErrors = validatedFields.error.flatten().fieldErrors;
 //         console.error("Validation failed", fieldErrors);
 //         return {
 //             errors: {
@@ -750,8 +739,8 @@ export async function authenticate(
 //                 startDate,
 //                 isActive,
 //             },
-//         });     
-//         revalidatePath('/dashboard/workers');   
+//         });
+//         revalidatePath('/dashboard/workers');
 //         return {
 //             message: 'Worker created successfully!',
 //             success: true,
@@ -771,7 +760,7 @@ export async function authenticate(
 //                 isActive: ['Database error'],
 //             },
 //         };
-//     }            
+//     }
 // }
 
 // // Update Worker
@@ -886,7 +875,6 @@ export async function authenticate(
 // }
 
 // // ****************** Common Actions ******************
-
 
 // export async function reloadInvoices() {
 //     revalidatePath("/dashboard/invoices");

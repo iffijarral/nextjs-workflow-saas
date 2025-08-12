@@ -16,8 +16,6 @@
 // //   }
 // // }
 
-
-
 // export async function listInvoices() {
 //   const data = await sql`
 //     SELECT invoices.amount, customers.name
@@ -29,8 +27,8 @@
 // }
 
 // export async function GET() {
- 
-//   try {    
+
+//   try {
 //   	return Response.json(await listInvoices());
 //   } catch (error) {
 //   	return Response.json({ error }, { status: 500 });

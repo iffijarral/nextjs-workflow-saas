@@ -12,7 +12,10 @@ interface ToastContextType {
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export function ToastProvider({ children }: { children: ReactNode }) {
-  const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: ToastType;
+  } | null>(null);
 
   const showToast = (message: string, type: ToastType) => {
     setToast({ message, type });
@@ -22,7 +25,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      {toast && <Toast message={toast.message} type={toast.type} onClose={()=> {}} />}
+      {toast && (
+        <Toast message={toast.message} type={toast.type} onClose={() => {}} />
+      )}
     </ToastContext.Provider>
   );
 }

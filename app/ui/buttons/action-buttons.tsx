@@ -1,13 +1,23 @@
 "use client";
 
-import { TrashIcon, ClipboardDocumentListIcon, AtSymbolIcon } from "@heroicons/react/24/outline";
+import {
+  TrashIcon,
+  ClipboardDocumentListIcon,
+  AtSymbolIcon,
+} from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { Toast } from "../common/toast";
 import { sendInvoice } from "@/app/lib/actions/emailActions";
 import { deleteWorker } from "@/app/lib/actions/workerActions";
 import { deleteCustomer } from "@/app/lib/actions/customerActions";
-import { deleteInvoice, reloadInvoices } from "@/app/lib/actions/invoiceActions";
-import { deleteProject, reloadProjects } from "@/app/lib/actions/projectActions";
+import {
+  deleteInvoice,
+  reloadInvoices,
+} from "@/app/lib/actions/invoiceActions";
+import {
+  deleteProject,
+  reloadProjects,
+} from "@/app/lib/actions/projectActions";
 import DeleteModel from "../common/delete-model";
 import InvoicePreviewModal from "../common/InvoicePreviewModal";
 import { InvoiceTableRow } from "@/app/lib/definitions";
@@ -20,7 +30,7 @@ type DeleteState = {
   success: boolean;
 };
 
-export function Delete({ id, route }: { id: string, route: string }) {
+export function Delete({ id, route }: { id: string; route: string }) {
   const [showConfirm, setShowConfirm] = useState(false); // For confirmation modal
   const [state, setState] = useState<DeleteState>({
     success: false,
@@ -31,14 +41,13 @@ export function Delete({ id, route }: { id: string, route: string }) {
   const handleConfirmDelete = async () => {
     try {
       let response;
-      if (route === 'customer')
+      if (route === "customer")
         response = await deleteCustomer(id); // Perform the delete
-      else if (route === 'worker')
+      else if (route === "worker")
         response = await deleteWorker(id); // Perform the delete
-      else if (route === 'project')
-        response = await deleteProject(id); // Perform the delete      
-      else
-        response = await deleteInvoice(id); // Perform the delete
+      else if (route === "project")
+        response = await deleteProject(id); // Perform the delete
+      else response = await deleteInvoice(id); // Perform the delete
       if (response?.success) {
         setState({
           success: true,
@@ -79,7 +88,10 @@ export function Delete({ id, route }: { id: string, route: string }) {
 
       {/* Confirmation Modal */}
       {showConfirm && (
-        <DeleteModel handleConfirmDelete={handleConfirmDelete} handleCancelDelete={handleCancelDelete} />
+        <DeleteModel
+          handleConfirmDelete={handleConfirmDelete}
+          handleCancelDelete={handleCancelDelete}
+        />
       )}
 
       {/* Show the toast notification */}
@@ -89,9 +101,9 @@ export function Delete({ id, route }: { id: string, route: string }) {
           type={state.success ? "success" : "error"}
           onClose={async () => {
             // await reload(); // ✅ Revalidate AFTER toast closes
-            if (route === 'project') {
+            if (route === "project") {
               await reloadProjects(); // Reload projects if the route is project
-            } else if (route === 'invoice') {
+            } else if (route === "invoice") {
               await reloadInvoices(); // Reload invoices if the route is invoice
             }
             setState({ ...state, message: null }); // Reset the message state
@@ -103,14 +115,14 @@ export function Delete({ id, route }: { id: string, route: string }) {
 }
 
 // Worker Log
-export function Log({ id, route }: { id: string, route: string }) {
+export function Log({ id, route }: { id: string; route: string }) {
   console.log("Log button clicked for ID:", id, "Route:", route);
   return (
     <>
       <button
         type="button"
         className="rounded-md border p-2 hover:bg-gray-100"
-        onClick={() => console.log('log button clicked')} // Open the modal on click
+        onClick={() => console.log("log button clicked")} // Open the modal on click
       >
         <span className="sr-only">Log</span>
         <ClipboardDocumentListIcon className="w-5" />
@@ -122,7 +134,10 @@ export function Log({ id, route }: { id: string, route: string }) {
 // SendMail component
 export function SendMail({ invoice }: { invoice: InvoiceTableRow }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [toast, setToast] = useState<null | { message: string; type: "success" | "error" }>(null);
+  const [toast, setToast] = useState<null | {
+    message: string;
+    type: "success" | "error";
+  }>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSendMail = async () => {
@@ -136,7 +151,6 @@ export function SendMail({ invoice }: { invoice: InvoiceTableRow }) {
         console.log("Mail sent successfully");
         setToast({ message: "Mail sent successfully", type: "success" });
         setIsOpen(false); // Close the modal after sending
-
       } else {
         setToast({ message: "Error sending mail:", type: "error" });
       }
@@ -156,9 +170,25 @@ export function SendMail({ invoice }: { invoice: InvoiceTableRow }) {
       >
         <span className="sr-only">Send Mail</span>
         {isLoading ? (
-          <svg className="w-5 h-5 animate-spin text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+          <svg
+            className="w-5 h-5 animate-spin text-gray-500"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            ></path>
           </svg>
         ) : (
           <AtSymbolIcon className="w-5" />
