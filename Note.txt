@@ -11,6 +11,6 @@ Gitlab Communication with vps in deploy stage
 To established the connection with vps and CI/CD pipeline in deploy stage, I generated new ssh key named gitlab_ci_deploy.
 Its private key is saved in CI/CD variable and the pub key is saved in ~/.ssh/authorized_keys at vps. 
 
-vps communication with gitlab outside pipeline
+Vps communication with gitlab outside pipeline
 For this I generated a ssh key at vps named id_rsa_new. Its pub key is added to gitlab's ssh keys. 
 In ~/.ssh/config file I added the host information of gitlab project. This way I am able to communicate with gitlab at vps.
