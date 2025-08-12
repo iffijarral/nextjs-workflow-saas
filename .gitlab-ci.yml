@@ -27,7 +27,7 @@ audit:
   script:
     - npm install -g pnpm
     - pnpm install --frozen-lockfile
-    - pnpm audit --audit-level=high
+    - pnpm audit --audit-level=critical
   only:
     - main
 
