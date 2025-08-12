@@ -3,7 +3,7 @@ version: '3.8'
 services:
   db:
     image: postgres:17.0-alpine
-    container_name: rah_pg
+    container_name: db
     environment:     
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}
@@ -20,22 +20,17 @@ services:
     networks:
       - rah-network
 
-  nextjs:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: rah_nextjs    
+  app:
+    image: $APP_IMAGE
+    container_name: app    
     ports:
       - "3000:3000"
-    env_file:
-      - .env
     depends_on:
       db:
         condition: service_healthy
     environment:
-      # Use the correct DATABASE_URL variable from your .env
       DATABASE_URL: ${DATABASE_URL}
-      NODE_ENV: production          
+      NODE_ENV: production
     networks:
       - rah-network
 
