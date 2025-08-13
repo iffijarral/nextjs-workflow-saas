@@ -21,10 +21,10 @@ services:
       - rah-network
 
   nextjs:
-    # image: $APP_IMAGE
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: $APP_IMAGE
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
     container_name: rah_nextjs
     ports:
       - "3000:3000"
