@@ -21,13 +21,18 @@ services:
       - rah-network
 
   nextjs:
-    image: $APP_IMAGE
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
+    # image: $APP_IMAGE
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: rah_nextjs
     ports:
       - "3000:3000"
+    env_file:
+      - .env
+    # volumes:
+    #   - .:/app          # Mount current directory into /app inside the container
+    #   - /app/node_modules
     depends_on:
       db:
         condition: service_healthy

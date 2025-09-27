@@ -14,3 +14,7 @@ Its private key is saved in CI/CD variable and the pub key is saved in ~/.ssh/au
 Vps communication with gitlab outside pipeline
 For this I generated a ssh key at vps named id_rsa_new. Its pub key is added to gitlab's ssh keys. 
 In ~/.ssh/config file I added the host information of gitlab project. This way I am able to communicate with gitlab at vps.
+
+For SSL
+After having minimum admin.rahmaler.dk.conf I ran following cmd sudo certbot --nginx -d admin.rahmaler.dk
+Then I updated the admin.rahmaler.dk.conf to have ssl specific config. 
