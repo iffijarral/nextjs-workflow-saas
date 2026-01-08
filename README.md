@@ -2,7 +2,7 @@
 
 A full-stack **SaaS Workflow Platform** built to help companies manage their **projects, invoices, customers, and workforce** in one place.
 
-This platform is designed with scalability, maintainability, and real-world business workflows in mind.
+Built using modern **Next.js App Router patterns**, with a strong emphasis on **Server Actions**, clean domain modeling, and production-ready infrastructure.
 
 ---
 
@@ -36,9 +36,11 @@ This platform is designed with scalability, maintainability, and real-world busi
 - **Next.js**
 - **React**
 - **TypeScript**
-
+- **Server Actions for mutations and secure data access**
+  
 ### Backend
-- **Next.js API Routes**
+- **Next.js Server Actions**
+- **Next.js API Routes** (used where HTTP-based access is required)
 - **Prisma ORM**
 - **PostgreSQL**
 
@@ -49,13 +51,24 @@ This platform is designed with scalability, maintainability, and real-world busi
 
 ---
 
-## Architecture Overview
+## 🧠 Architecture Highlights
 
-- Monorepo structure using **Next.js**
-- Database access handled via **Prisma**
-- PostgreSQL as the primary relational database
-- Containerized services for consistent development and deployment
-- CI/CD pipeline for automated testing and deployment
+- **Server Actions–first approach**
+  - Business logic and mutations handled directly on the server
+  - Reduced client-side API boilerplate
+  - Improved security and performance
+
+- **Hybrid Data Access**
+  - Server Actions for internal app workflows
+  - API Routes for external or integration-based use cases
+
+- **Clean Domain Modeling**
+  - Prisma schema designed around real business entities
+  - Strong separation between UI, actions, and data access
+
+- **Production-ready setup**
+  - Dockerized environment
+  - CI/CD pipeline for consistent deployments
 
 ---
 
